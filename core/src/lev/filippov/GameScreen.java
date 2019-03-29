@@ -15,15 +15,14 @@ public class GameScreen implements Screen {
     private Vector2 mousePosition;
     private Camera camera;
     private Map map;
-    private Monster monster;
     private Turret turret;
     private TextureRegion selectedCellTexture;
     private ParticleEmitter particleEmitter;
+    private MonsterEmitter monsterEmitter;
+    private BulletEmitter bulletEmitter;
     private int selectedCellX, selectedCellY;
+    private float respTime;
 
-    public Monster getMonster() {
-        return monster;
-    }
 
     public GameScreen(SpriteBatch batch, Camera camera) {
         this.batch = batch;
@@ -34,10 +33,23 @@ public class GameScreen implements Screen {
     public void show() {
         prepare();
         this.particleEmitter = new ParticleEmitter();
+        this.monsterEmitter = new MonsterEmitter();
+        this.bulletEmitter = new BulletEmitter();
         this.map = new Map("level01.map");
-        this.monster = new Monster(this);
         this.turret = new Turret(this);
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
+    }
+
+    public ParticleEmitter getParticleEmitter() {
+        return particleEmitter;
+    }
+
+    public MonsterEmitter getMonsterEmitter() {
+        return monsterEmitter;
+    }
+
+    public BulletEmitter getBulletEmitter() {
+        return bulletEmitter;
     }
 
     @Override
@@ -50,9 +62,9 @@ public class GameScreen implements Screen {
         batch.setColor(1, 1, 0, 0.5f);
         batch.draw(selectedCellTexture, selectedCellX * 80, selectedCellY * 80);
         batch.setColor(1, 1, 1, 1);
-
-        monster.render(batch);
+        monsterEmitter.render(batch);
         turret.render(batch);
+        bulletEmitter.render(batch);
 
         particleEmitter.render(batch);
         batch.end();
@@ -61,11 +73,24 @@ public class GameScreen implements Screen {
     public void update(float dt) {
         //создание частицы через particleEmitter
         particleEmitter.setup(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
+
+        respTime +=dt;
+
+        if(respTime > 3) {
+            monsterEmitter.setup(16*80,MathUtils.random(1,9)*80, -1,0, 100);
+            respTime=0;
+        }
+
         map.update(dt);
-        monster.update(dt);
         turret.update(dt);
         particleEmitter.update(dt);
+        monsterEmitter.update(dt);
+        bulletEmitter.update(dt);
+
+
+        monsterEmitter.checkPool();
         particleEmitter.checkPool();
+        bulletEmitter.checkPool();
     }
     //
     public void prepare() {
@@ -78,6 +103,7 @@ public class GameScreen implements Screen {
                 ScreenManager.getInstance().getViewport().unproject(mousePosition);
                 selectedCellX = (int) (mousePosition.x / 80);
                 selectedCellY = (int) (mousePosition.y / 80);
+
                 return true;
             }
         };

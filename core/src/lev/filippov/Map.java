@@ -13,6 +13,7 @@ public class Map {
 
     private final int ELEMENT_GRASS = 0;
     private final int ELEMENT_ROAD = 1;
+    private final int ELEMENT_WALL = 2;
 
     private byte[][] data;
     private TextureRegion textureRegionGrass;
@@ -39,6 +40,11 @@ public class Map {
                 if (data[i][j] == ELEMENT_ROAD) {
                     batch.draw(textureRegionRoad, i * 80, j * 80);
                 }
+                if (data[i][j] == ELEMENT_WALL) {
+                    batch.setColor(0,0,0,1);
+                    batch.draw(textureRegionGrass, i*80, j*80);
+                    batch.setColor(1,1,1,1);
+                }
             }
         }
 //        batch.setColor(1,1,1,0.4f);
@@ -47,10 +53,10 @@ public class Map {
     }
 
     public void update(float dt) {
-        if (Gdx.input.justTouched()) {
-            selectedX = Gdx.input.getX() / 80;
-            selectedY = (720 - Gdx.input.getY()) / 80;
-        }
+//        if (Gdx.input.justTouched()) {
+//            selectedX = Gdx.input.getX() / 80;
+//            selectedY = (720 - Gdx.input.getY()) / 80;
+//        }
     }
 
     public void loadMapFromFile(String mapName) {
@@ -64,6 +70,9 @@ public class Map {
                     char symb = str.charAt(j);
                     if (symb == '1') {
                         data[j][8 - i] = ELEMENT_ROAD;
+                    }
+                    if (symb=='2'){
+                        data[j][8-i] = ELEMENT_WALL;
                     }
                 }
             }
