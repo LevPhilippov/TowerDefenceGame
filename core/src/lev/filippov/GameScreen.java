@@ -35,13 +35,13 @@ public class GameScreen implements Screen {
     @Override
     public void show() {
         prepare();
-        this.particleEmitter = new ParticleEmitter();
-        this.monsterEmitter = new MonsterEmitter();
-        this.bulletEmitter = new BulletEmitter(this);
         this.map = new Map("level01.map");
         this.turret = new Turret(this);
         this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
+        this.particleEmitter = new ParticleEmitter();
+        this.monsterEmitter = new MonsterEmitter();
+        this.bulletEmitter = new BulletEmitter(this);
     }
 
     public ParticleEmitter getParticleEmitter() {
@@ -61,6 +61,7 @@ public class GameScreen implements Screen {
         float dt = Gdx.graphics.getDeltaTime();
         update(dt);
         batch.begin();
+
         map.render(batch);
         // рисуем клетку под курсором мыши
         batch.setColor(1, 1, 0, 0.5f);
@@ -69,34 +70,60 @@ public class GameScreen implements Screen {
         monsterEmitter.render(batch);
         turret.render(batch);
         bulletEmitter.render(batch);
-
         particleEmitter.render(batch);
         scoreFont.draw(batch, "Score:" + score, 20, 700);
+
         batch.end();
     }
 
     public void update(float dt) {
         //создание частицы через particleEmitter
-        particleEmitter.setup(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
-
-        respTime +=dt;
-
-        if(respTime > 3) {
-            monsterEmitter.setup(16*80,MathUtils.random(1,9)*80, -1,0, 100);
-            respTime=0;
-        }
-
         map.update(dt);
         turret.update(dt);
-        particleEmitter.update(dt);
+
+        setupMonster(dt);
+        //particleEmitter.setup(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
+
         monsterEmitter.update(dt);
         bulletEmitter.update(dt);
+        particleEmitter.update(dt);
 
+        checkCollisions();
 
         monsterEmitter.checkPool();
-        particleEmitter.checkPool();
         bulletEmitter.checkPool();
+        particleEmitter.checkPool();
     }
+
+    private void setupMonster(float dt) {
+        respTime +=dt;
+        if(respTime > 3) {
+            monsterEmitter.setup(16*80, MathUtils.random(1,8)*80, -1,0, 100);
+            respTime=0;
+        }
+    }
+    private void checkCollisions(){
+        Monster m;
+        Bullet b;
+        for (int i = 0; i <monsterEmitter.getActiveList().size() ; i++) {
+             m = monsterEmitter.getActiveList().get(i);
+            for (int j = 0; j <bulletEmitter.getActiveList().size() ; j++) {
+                b =bulletEmitter.getActiveList().get(j);
+                if(m.getHitBox().overlaps(b.getHitBox())){
+                    b.makeDamage(m);
+                }
+            }
+        }
+
+//        for (Monster m : monsterEmitter.getActiveList() ) {
+//            for (Bullet b : bulletEmitter.getActiveList() ) {
+//                if(m.getHitBox().overlaps(b.getHitBox()))
+//                    System.out.println("Collision!");
+//                    b.makeDamage(m);
+//            }
+//        }
+    }
+
     //
     public void prepare() {
         mousePosition = new Vector2(0, 0);

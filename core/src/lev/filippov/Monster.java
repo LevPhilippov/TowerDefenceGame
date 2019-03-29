@@ -2,6 +2,7 @@ package lev.filippov;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
@@ -14,6 +15,8 @@ public class Monster implements Poolable {
     private Vector2 velocity;
     private float speed = 100;
     private boolean active;
+    private Circle hitBox;
+    private int scale;
 
     private int hp;
     private int hpMax;
@@ -30,6 +33,12 @@ public class Monster implements Poolable {
         this.velocity = new Vector2();
         this.hpMax = 100;
         this.hp = this.hpMax;
+        hitBox = new Circle(position, 40);
+        scale = 1;
+    }
+
+    public Circle getHitBox() {
+        return hitBox;
     }
 
     @Override
@@ -44,6 +53,7 @@ public class Monster implements Poolable {
 
     public void update(float dt) {
         position.mulAdd(velocity, dt);
+        hitBox.setPosition(position);
 
         if (position.x < 0)
             deactivate();
@@ -73,5 +83,12 @@ public class Monster implements Poolable {
 
     public void deactivate(){
         active = false;
+        hp = hpMax;
+    }
+
+    public void receiveDamage(int damage) {
+        hp -= damage*scale;
+        if(hp<=0)
+            deactivate();
     }
 }
