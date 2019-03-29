@@ -18,10 +18,6 @@ public class Map {
     private byte[][] data;
     private TextureRegion textureRegionGrass;
     private TextureRegion textureRegionRoad;
-//    private TextureRegion textureRegionCursor;
-
-    private int selectedX = 0;
-    private int selectedY = 0;
 
     public Map(String mapName) {
         data = new byte[MAP_WIDTH][MAP_HEIGHT];
@@ -47,16 +43,14 @@ public class Map {
                 }
             }
         }
-//        batch.setColor(1,1,1,0.4f);
-//        batch.draw(textureRegionCursor, selectedX * 80, selectedY * 80);
-//        batch.setColor(1,1,1,1);
     }
 
     public void update(float dt) {
-//        if (Gdx.input.justTouched()) {
-//            selectedX = Gdx.input.getX() / 80;
-//            selectedY = (720 - Gdx.input.getY()) / 80;
-//        }
+    }
+
+
+    public void setWall(int cx, int cy) {
+        data[cx][cy] = ELEMENT_WALL;
     }
 
     public void loadMapFromFile(String mapName) {

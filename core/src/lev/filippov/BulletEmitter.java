@@ -3,10 +3,16 @@ package lev.filippov;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class BulletEmitter extends ObjectPool<Bullet> {
+    private Bullet temp;
+    private GameScreen gameScreen;
+
+    public BulletEmitter (GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
+    }
 
     @Override
     protected Bullet newObject() {
-        return new Bullet();
+        return new Bullet(gameScreen);
     }
 
     public void setup(float x, float y, float vx, float vy, float speed){

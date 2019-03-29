@@ -5,6 +5,7 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -21,7 +22,9 @@ public class GameScreen implements Screen {
     private MonsterEmitter monsterEmitter;
     private BulletEmitter bulletEmitter;
     private int selectedCellX, selectedCellY;
+    private BitmapFont scoreFont;
     private float respTime;
+    String score;
 
 
     public GameScreen(SpriteBatch batch, Camera camera) {
@@ -34,9 +37,10 @@ public class GameScreen implements Screen {
         prepare();
         this.particleEmitter = new ParticleEmitter();
         this.monsterEmitter = new MonsterEmitter();
-        this.bulletEmitter = new BulletEmitter();
+        this.bulletEmitter = new BulletEmitter(this);
         this.map = new Map("level01.map");
         this.turret = new Turret(this);
+        this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
     }
 
@@ -67,6 +71,7 @@ public class GameScreen implements Screen {
         bulletEmitter.render(batch);
 
         particleEmitter.render(batch);
+        scoreFont.draw(batch, "Score:" + score, 20, 700);
         batch.end();
     }
 
@@ -101,6 +106,13 @@ public class GameScreen implements Screen {
                 mousePosition.set(screenX, screenY);
                 // метод переводит координаты экраны в координаты нашего окна
                 ScreenManager.getInstance().getViewport().unproject(mousePosition);
+
+                if (selectedCellX == ((int) mousePosition.x/80) && selectedCellY == ((int) mousePosition.y/80)) {
+                    //здесь неоюходимо передать управление методу, определяющему (по карте объектов) -
+                    // какой элемент подсвечен и передать управление соответсвующему методу
+                    map.setWall(selectedCellX, selectedCellY);
+                }
+
                 selectedCellX = (int) (mousePosition.x / 80);
                 selectedCellY = (int) (mousePosition.y / 80);
 
