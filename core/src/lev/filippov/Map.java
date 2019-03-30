@@ -3,6 +3,7 @@ package lev.filippov;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,10 +15,14 @@ public class Map {
     private final int ELEMENT_GRASS = 0;
     private final int ELEMENT_ROAD = 1;
     private final int ELEMENT_WALL = 2;
+    private final int ELEMENT_DESTINATION = 5;
+    private final int TURRET = 3;
 
     private byte[][] data;
     private TextureRegion textureRegionGrass;
     private TextureRegion textureRegionRoad;
+
+    private int version;
 
     public Map(String mapName) {
         data = new byte[MAP_WIDTH][MAP_HEIGHT];
@@ -25,6 +30,30 @@ public class Map {
         textureRegionRoad = Assets.getInstance().getAtlas().findRegion("road");
 //        textureRegionCursor = Assets.getInstance().getAtlas().findRegion("cursor");
         loadMapFromFile(mapName);
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void updateMapVersion() {
+        this.version++;
+    }
+
+    public byte[][] getData() {
+        return data;
+    }
+
+    public int getMAP_WIDTH() {
+        return MAP_WIDTH;
+    }
+
+    public int getMAP_HEIGHT() {
+        return MAP_HEIGHT;
+    }
+
+    public int getELEMENT_DESTINATION() {
+        return ELEMENT_DESTINATION;
     }
 
     public void render(SpriteBatch batch) {
@@ -68,6 +97,9 @@ public class Map {
                     if (symb=='2'){
                         data[j][8-i] = ELEMENT_WALL;
                     }
+                    if (symb =='5') {
+                        data[j][8-i] = ELEMENT_DESTINATION;
+                    }
                 }
             }
             reader.close();
@@ -75,4 +107,32 @@ public class Map {
             e.printStackTrace();
         }
     }
+
+    public boolean isEmpty(int x, int y){
+        return data[x][y] == ELEMENT_GRASS || data[x][y] == ELEMENT_ROAD;
+    }
+
+    public boolean isExist(int x, int y) {
+        return (x >=0 && x<MAP_WIDTH && y>=0 && y<MAP_HEIGHT);
+    }
+    public boolean isEmpty(Vector2 v){
+        int x = (int)v.x;
+        int y = (int)v.y;
+        return data[x][y] == 0;
+    }
+    public boolean isExist(Vector2 v) {
+        int x = (int)v.x;
+        int y = (int)v.y;
+        return (x >=0 && x<MAP_WIDTH && y>=0 && y<MAP_HEIGHT);
+    }
+
+    public boolean isDestination(int x, int y) {
+        return data[x][y]==ELEMENT_DESTINATION;
+    }
+    public boolean isDestination(Vector2 v) {
+        int x = (int)v.x;
+        int y = (int)v.y;
+        return data[x][y]==ELEMENT_DESTINATION;
+    }
+
 }

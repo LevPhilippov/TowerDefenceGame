@@ -50,8 +50,8 @@ public class Turret {
                 float dst = getRangeToTarget(m);
                 if (dst < maxDst) {
                     target = m;
-                    break;
- //                   maxDst = dst;
+//                    break;
+                    maxDst = dst;
                 }
             }
 //        }

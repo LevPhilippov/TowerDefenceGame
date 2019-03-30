@@ -3,10 +3,15 @@ package lev.filippov;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class MonsterEmitter extends ObjectPool <Monster> {
+    private GameScreen gameScreen;
+
+    public MonsterEmitter(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
+    }
 
     @Override
     protected Monster newObject() {
-        return new Monster();
+        return new Monster(gameScreen.getMap());
     }
 
     public void render (SpriteBatch batch) {

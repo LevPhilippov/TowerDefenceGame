@@ -23,8 +23,12 @@ public class GameScreen implements Screen {
     private BulletEmitter bulletEmitter;
     private int selectedCellX, selectedCellY;
     private BitmapFont scoreFont;
+
+    public Map getMap() {
+        return map;
+    }
+
     private float respTime;
-    String score;
 
 
     public GameScreen(SpriteBatch batch, Camera camera) {
@@ -40,7 +44,7 @@ public class GameScreen implements Screen {
         this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
         this.particleEmitter = new ParticleEmitter();
-        this.monsterEmitter = new MonsterEmitter();
+        this.monsterEmitter = new MonsterEmitter(this);
         this.bulletEmitter = new BulletEmitter(this);
     }
 
@@ -71,7 +75,9 @@ public class GameScreen implements Screen {
         turret.render(batch);
         bulletEmitter.render(batch);
         particleEmitter.render(batch);
-        scoreFont.draw(batch, "Score:" + score, 20, 700);
+        scoreFont.draw(batch, "Score:" + Player.getInstance().getScore(), 20, 700);
+        scoreFont.draw(batch, "Gold:" + Player.getInstance().getGold(), 120, 700);
+        scoreFont.draw(batch, "HP:" + Player.getInstance().getHp(), 220, 700);
 
         batch.end();
     }
@@ -80,6 +86,7 @@ public class GameScreen implements Screen {
         //создание частицы через particleEmitter
         map.update(dt);
         turret.update(dt);
+
 
         setupMonster(dt);
         //particleEmitter.setup(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
@@ -98,7 +105,7 @@ public class GameScreen implements Screen {
     private void setupMonster(float dt) {
         respTime +=dt;
         if(respTime > 3) {
-            monsterEmitter.setup(16*80, MathUtils.random(1,8)*80, -1,0, 100);
+            monsterEmitter.setup(15, MathUtils.random(1,8), -1,0, 100);
             respTime=0;
         }
     }
@@ -114,14 +121,6 @@ public class GameScreen implements Screen {
                 }
             }
         }
-
-//        for (Monster m : monsterEmitter.getActiveList() ) {
-//            for (Bullet b : bulletEmitter.getActiveList() ) {
-//                if(m.getHitBox().overlaps(b.getHitBox()))
-//                    System.out.println("Collision!");
-//                    b.makeDamage(m);
-//            }
-//        }
     }
 
     //
@@ -138,6 +137,7 @@ public class GameScreen implements Screen {
                     //здесь неоюходимо передать управление методу, определяющему (по карте объектов) -
                     // какой элемент подсвечен и передать управление соответсвующему методу
                     map.setWall(selectedCellX, selectedCellY);
+                    map.updateMapVersion();
                 }
 
                 selectedCellX = (int) (mousePosition.x / 80);
