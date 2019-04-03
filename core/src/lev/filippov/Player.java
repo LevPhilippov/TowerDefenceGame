@@ -25,9 +25,13 @@ public class Player {
         return score;
     }
 
-    public void addGoldandScore(Monster m){
+    public void addGoldandScoreForMonster(Monster m){
         money +=m.getCostForDestroying();
         score+=m.getScoreForDestroying();
+    }
+
+    public void addMoney(int amount) {
+        money+=amount;
     }
 
     public void receiveDamage(Monster monster) {

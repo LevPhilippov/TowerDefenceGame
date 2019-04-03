@@ -138,9 +138,9 @@ public class GameScreen implements Screen {
         turretEmitter.checkPool();
     }
 
-    public void setTurret() {
+    public void setTurret(TurretType type) {
         if (player.isMoneyEnough(50)) {
-            if (turretEmitter.setup(selectedCellX, selectedCellY)) {
+            if (turretEmitter.setup(selectedCellX, selectedCellY, type)) {
                 player.spendMoney(50);
             }
         }
@@ -228,30 +228,30 @@ public class GameScreen implements Screen {
         btnSetTurret1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-             setTurret();
+             setTurret(TurretType.COMMON);
             }
         });
 
         btnSetTurret2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                setTurret();
+                setTurret(TurretType.FREEZE);
             }
         });
 
-//        btnDestroyTurret.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                turretEmitter.destroyTurret(selectedCellX, selectedCellY);
-//            }
-//        });
-//
-//        btnUpgradeTurret.addListener(new ChangeListener() {
-//            @Override
-//            public void changed(ChangeEvent event, Actor actor) {
-//                turretEmitter.upgradeTurret(playerInfo, selectedCellX, selectedCellY);
-//            }
-//        });
+        btnDestroyTurret.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                turretEmitter.destroyTurret(selectedCellX, selectedCellY);
+            }
+        });
+
+        btnUpgradeTurret.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                turretEmitter.upgradeTurret(player, selectedCellX, selectedCellY);
+            }
+        });
 
         stage.addActor(groupTurretSelection);
         stage.addActor(groupTurretAction);

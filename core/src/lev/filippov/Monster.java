@@ -1,6 +1,5 @@
 package lev.filippov;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
@@ -171,7 +170,7 @@ public class Monster implements Poolable {
         hp -= damage*scale;
         if(hp<=0) {
             //добавляем золота и очков игроку
-            gameScreen.getPlayer().addGoldandScore(this);
+            gameScreen.getPlayer().addGoldandScoreForMonster(this);
             deactivate();
         }
     }

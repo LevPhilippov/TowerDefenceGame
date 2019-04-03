@@ -6,39 +6,77 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Turret implements Poolable {
     private GameScreen gameScreen;
-
+    //позиция и угол разворота
     private TextureRegion texture;
     private Vector2 position;
     private Vector2 temp;
     private int cellX, cellY;
     private float angle;
-    private Monster target;
-    private float rotationSpeed;
-    private float fireRadius;
-
-    private float fireRate;
-    private float chargeTime;
+    //вспомогательные поля
     private boolean charged;
     private boolean active;
+    private float chargeTime; //для проверки готовности к стрельбе
+
+    //игровые характеристики
+    private TurretType type;
+    private float rotationSpeed;
+    private float fireRadius;
+    private float fireRate;
     private int damage;
     private float bulletSpeed;
 
     //игровые параметры пушки
     private int cost;
 
+    //прочие сущности
+    private Monster target;
+
 
     public Turret(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
-        this.texture = new TextureRegion(Assets.getInstance().getAtlas().findRegion("turrets"), 0, 0, 80, 80);
         position = new Vector2();
         temp = new Vector2();
-        this.fireRadius = 500f;
-        this.rotationSpeed = 360f;
-        this.fireRate = 0.1f;
-        this.cost = 50;
-        this.damage = 10;
-        this.bulletSpeed = 500;
+//        игровые параметры
+//        this.fireRadius = 500f;
+//        this.rotationSpeed = 360f;
+//        this.fireRate = 0.1f;
+//        this.cost = 50;
+//        this.damage = 10;
+//        this.bulletSpeed = 500;
 
+    }
+
+    public void init (int cellX, int cellY, TurretType type) {
+        //текстуры и координаты
+        this.texture = new TextureRegion(Assets.getInstance().getAtlas().
+        findRegion(type.textureRegionName), type.coordX, type.coordY, type.width, type.height);
+
+        this.type = type;
+        this.cellX = cellX;
+        this.cellY = cellY;
+        position.set(cellX*80+40, cellY*80+40);
+        active=true;
+        //игровые параметры
+        initGameParam();
+    }
+
+    private void initGameParam() {
+        this.fireRadius = type.fireRadius;
+        this.rotationSpeed = type.rotationSpeed;
+        this.fireRate = type.fireRate;
+        this.damage = type.damage;
+        this.bulletSpeed = type.bulletSpeed;
+        this.cost = type.cost;
+        charged = false;
+        chargeTime = 0;
+
+    }
+
+    public void upgrade() {
+        this.type = this.type.upgrade();
+        this.texture = new TextureRegion(Assets.getInstance().getAtlas().
+        findRegion(type.textureRegionName), type.coordX, type.coordY, type.width, type.height);
+        initGameParam();
     }
 
     public int getCost() {
@@ -53,7 +91,6 @@ public class Turret implements Poolable {
     public void render(SpriteBatch batch) {
         batch.draw(texture, cellX * 80, cellY * 80, 40, 40, 80, 80, 1, 1, angle);
     }
-
     public void update(float dt) {
 //        target = null;
 
@@ -82,6 +119,7 @@ public class Turret implements Poolable {
     private float getRangeToTarget(Monster target) {
         return position.dst(target.getPosition());
     }
+
     private boolean isMonsterInRange(Monster target) {
         return fireRadius >= getRangeToTarget(target);
     }
@@ -135,18 +173,15 @@ public class Turret implements Poolable {
         active=false;
     }
 
-    public void init (int cellX, int cellY) {
-        this.cellX = cellX;
-        this.cellY = cellY;
-        position.set(cellX*80+40, cellY*80+40);
-        active=true;
-    }
-
     public int getCellX() {
         return cellX;
     }
 
     public int getCellY() {
         return cellY;
+    }
+
+    public TurretType getType() {
+        return type;
     }
 }
