@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-public class Turret {
+public class Turret implements Poolable {
     private GameScreen gameScreen;
 
     private TextureRegion texture;
@@ -19,18 +19,30 @@ public class Turret {
     private float fireRate;
     private float chargeTime;
     private boolean charged;
+    private boolean active;
+
+    //игровые параметры пушки
+    private int cost;
 
 
     public Turret(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         this.texture = new TextureRegion(Assets.getInstance().getAtlas().findRegion("turrets"), 0, 0, 80, 80);
-        this.cellX = 8;
-        this.cellY = 4;
-        position = new Vector2(cellX*80+40, cellY*80+40);
+        position = new Vector2();
         temp = new Vector2();
         this.fireRadius = 500f;
         this.rotationSpeed = 360f;
         this.fireRate = 1f;
+        this.cost = 50;
+    }
+
+    public int getCost() {
+        return cost;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     public void render(SpriteBatch batch) {
@@ -38,12 +50,12 @@ public class Turret {
     }
 
     public void update(float dt) {
-        target = null;
+//        target = null;
 
-//        if (target != null && !isMonsterInRange(target)) {
-//            target = null;
-//        }
- //       if (target == null) {
+        if (target != null && !isMonsterInRange(target)) {
+            target = null;
+        }
+        if (target == null) {
             float maxDst = fireRadius;
             for (int i = 0; i < gameScreen.getMonsterEmitter().getActiveList().size(); i++) {
                 Monster m = gameScreen.getMonsterEmitter().getActiveList().get(i);
@@ -54,7 +66,7 @@ public class Turret {
                     maxDst = dst;
                 }
             }
-//        }
+        }
         if (target != null) {
             checkRotation(dt);
             openFire(dt);
@@ -68,25 +80,6 @@ public class Turret {
     }
 
     public void checkRotation(float dt) {
-//        float angleTo = getAngleToTarget();
-//        angleTo%=360;
-//        angle%=360;
-//
-//        if (angle >= angleTo) {
-//            if (angle-angleTo > 180) {
-//                angle += rotationSpeed * dt;
-//            } else {
-//                angle -= rotationSpeed * dt;
-//            }
-//        }
-//
-//        if (angle < angleTo) {
-//            if (angle-angleTo < -180) {
-//                angle -= rotationSpeed * dt;
-//            } else {
-//                angle += rotationSpeed * dt;
-//            }
-//        }
         if (target != null) {
             float angleTo = getAngleToTarget();
             if (angle > angleTo) {
@@ -129,4 +122,24 @@ public class Turret {
             System.out.println("Fire!");
             charged = false;
         }
-    }}
+    }
+
+    public void deactivate() {
+        active=false;
+    }
+
+    public void init (int cellX, int cellY) {
+        this.cellX = cellX;
+        this.cellY = cellY;
+        position.set(cellX*80+40, cellY*80+40);
+        active=true;
+    }
+
+    public int getCellX() {
+        return cellX;
+    }
+
+    public int getCellY() {
+        return cellY;
+    }
+}

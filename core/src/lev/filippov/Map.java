@@ -109,26 +109,33 @@ public class Map {
     }
 
     public boolean isEmpty(int x, int y){
+
         return data[x][y] == ELEMENT_GRASS || data[x][y] == ELEMENT_ROAD;
+//        return data[x][y] != ELEMENT_WALL;
     }
 
     public boolean isExist(int x, int y) {
-        return (x >=0 && x<MAP_WIDTH && y>=0 && y<MAP_HEIGHT);
-    }
-    public boolean isEmpty(Vector2 v){
-        int x = (int)v.x;
-        int y = (int)v.y;
-        return data[x][y] == 0;
-    }
-    public boolean isExist(Vector2 v) {
-        int x = (int)v.x;
-        int y = (int)v.y;
         return (x >=0 && x<MAP_WIDTH && y>=0 && y<MAP_HEIGHT);
     }
 
     public boolean isDestination(int x, int y) {
         return data[x][y]==ELEMENT_DESTINATION;
     }
+
+    public boolean isEmpty(Vector2 v){
+        int x = (int)v.x;
+        int y = (int)v.y;
+//        return data[x][y] != ELEMENT_WALL;
+        return data[x][y] == ELEMENT_GRASS || data[x][y] == ELEMENT_ROAD;
+
+    }
+
+    public boolean isExist(Vector2 v) {
+        int x = (int)v.x;
+        int y = (int)v.y;
+        return (x >=0 && x<MAP_WIDTH && y>=0 && y<MAP_HEIGHT);
+    }
+
     public boolean isDestination(Vector2 v) {
         int x = (int)v.x;
         int y = (int)v.y;
