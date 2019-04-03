@@ -15,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
+import java.sql.Struct;
+
 public class GameScreen implements Screen {
 
     private SpriteBatch batch;
@@ -30,6 +32,7 @@ public class GameScreen implements Screen {
     private BitmapFont scoreFont;
     private Stage stage;
     private Player player;
+    private String message;
 
     //GUI
     private Group groupTurretAction;
@@ -51,6 +54,7 @@ public class GameScreen implements Screen {
     //метод вызывается при установке экрана как текущего
     @Override
     public void show() {
+        this.message = "";
         this.map = new Map("level01.map");
         this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
@@ -106,13 +110,14 @@ public class GameScreen implements Screen {
     public void drawMessage(float dt) {
         if(transparence>=0.0f){
             scoreFont.setColor(1,1,0,transparence/3);
-            scoreFont.draw(batch, "Not enough gold!", selectedCellX*80, selectedCellY*80);
+            scoreFont.draw(batch, message, selectedCellX*80, selectedCellY*80);
             transparence -=dt;
         }
         scoreFont.setColor(1,1,1,1);
     }
-    public void setTransparence(){
+    public void setTransparence(String message){
         transparence = 3.0f;
+        this.message = message;
     }
 
     public void update(float dt) {
@@ -249,7 +254,7 @@ public class GameScreen implements Screen {
         btnUpgradeTurret.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                turretEmitter.upgradeTurret(player, selectedCellX, selectedCellY);
+                turretEmitter.upgradeTurret(selectedCellX, selectedCellY);
             }
         });
 
@@ -269,32 +274,7 @@ public class GameScreen implements Screen {
     }
 
 
-    //
-//    public void prepare() {
-//        mousePosition = new Vector2(0, 0);
-//        InputProcessor myProc = new InputAdapter() {
-//            @Override
-//            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-//                mousePosition.set(screenX, screenY);
-//                // метод переводит координаты экраны в координаты нашего окна
-//                ScreenManager.getInstance().getViewport().unproject(mousePosition);
-//
-//                if (selectedCellX == ((int) mousePosition.x/80) && selectedCellY == ((int) mousePosition.y/80)) {
-//                    //здесь неоюходимо передать управление методу, определяющему (по карте объектов) -
-//                    // какой элемент подсвечен и передать управление соответсвующему методу
-//                    map.setWall(selectedCellX, selectedCellY);
-//                    map.updateMapVersion();
-//                }
-//
-//                selectedCellX = (int) (mousePosition.x / 80);
-//                selectedCellY = (int) (mousePosition.y / 80);
-//
-//                return true;
-//            }
-//        };
-//        // InputMultiplexer im = new InputMultiplexer(stage, myProc);
-//        Gdx.input.setInputProcessor(myProc);
-//    }
+
     //метод вызывается при изменении размера экрана
 
     @Override

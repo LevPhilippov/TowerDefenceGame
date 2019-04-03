@@ -4,6 +4,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class TurretEmitter extends ObjectPool<Turret> {
     private GameScreen gameScreen;
+    private final String noTurretHere = "No turret here";
+    private final String notPossibleToUpgrade = "Not possible to upgrade!";
 
     public TurretEmitter(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
@@ -59,10 +61,10 @@ public class TurretEmitter extends ObjectPool<Turret> {
         return false;
     }
 
-    public boolean upgradeTurret(Player player, int cellX, int cellY) {
+    public boolean upgradeTurret(int cellX, int cellY) {
         Turret t = findTurret(cellX, cellY);
         if (isTurretExist(t) && isPossibleToUpgrade(t)) {
-            if(player.isMoneyEnough(t.getCost())) {
+            if(gameScreen.getPlayer().isMoneyEnough(t.getCost())) {
                 t.upgrade();
                 gameScreen.getPlayer().spendMoney(t.getCost());
             }
@@ -80,15 +82,26 @@ public class TurretEmitter extends ObjectPool<Turret> {
     }
 
     private boolean isTurretExist (int cellX, int cellY) {
-        return findTurret(cellX, cellY) != null;
+        if(findTurret(cellX, cellY) != null) {
+            return true;
+        }
+            gameScreen.setTransparence(noTurretHere);
+            return false;
     }
 
     private boolean isTurretExist(Turret t) {
-        return t != null;
-
+        if(t != null) {
+            return true;
+        }
+        gameScreen.setTransparence(noTurretHere);
+        return false;
     }
 
     private boolean isPossibleToUpgrade(Turret t) {
-        return t.getType().isPossibleToUpgrade();
+       if(t.getType().isPossibleToUpgrade()) {
+           return true;
+       }
+           gameScreen.setTransparence(notPossibleToUpgrade);
+           return false;
     }
 }

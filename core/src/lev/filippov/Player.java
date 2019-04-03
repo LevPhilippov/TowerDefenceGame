@@ -6,6 +6,7 @@ public class Player {
     private int money;
     private int score;
     private GameScreen gameScreen;
+    private final String message1 = new String("Not enough money!");
 
     public Player(GameScreen gameScreen) {
         this.hp = 100;
@@ -45,7 +46,7 @@ public class Player {
         if(money>=amount)
             return true;
         else{
-          gameScreen.setTransparence();
+          gameScreen.setTransparence(message1);
         }
         return false;
     }
