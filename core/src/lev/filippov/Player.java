@@ -5,16 +5,12 @@ public class Player {
     private int hp;
     private int money;
     private int score;
+    private GameScreen gameScreen;
 
-    private static Player ourInstance = new Player();
-
-
-    public static Player getInstance() {
-        return ourInstance;
-    }
-
-    private Player() {
+    public Player(GameScreen gameScreen) {
         this.hp = 100;
+        this.gameScreen = gameScreen;
+        this.money = 300;
     }
 
     public int getHp() {
@@ -42,7 +38,12 @@ public class Player {
     }
 
     public boolean isMoneyEnough(int amount) {
-        return money>=amount;
+        if(money>=amount)
+            return true;
+        else{
+          gameScreen.setTransparence();
+        }
+        return false;
     }
 
     public void spendMoney (int amount) {

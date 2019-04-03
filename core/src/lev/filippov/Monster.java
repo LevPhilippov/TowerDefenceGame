@@ -1,5 +1,6 @@
 package lev.filippov;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
@@ -9,6 +10,7 @@ import java.util.Stack;
 
 public class Monster implements Poolable {
     private Map map;
+    private GameScreen gameScreen;
 
     private TextureRegion texture;
     private TextureRegion textureHp;
@@ -46,8 +48,9 @@ public class Monster implements Poolable {
         return position;
     }
 
-    public Monster(Map map) {
-        this.map = map;
+    public Monster(GameScreen gameScreen) {
+        this.gameScreen = gameScreen;
+        this.map = gameScreen.getMap();
         this.texture = Assets.getInstance().getAtlas().findRegion("monster");
         this.textureHp = Assets.getInstance().getAtlas().findRegion("monsterHp");
         //движение
@@ -92,8 +95,8 @@ public class Monster implements Poolable {
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, position.x, position.y);
-     //   batch.draw(textureHp, position.x-40+12, position.y-40+70, 56 * ((float)hp / hpMax), 12);
+        batch.draw(texture, position.x-40, position.y-40);
+        batch.draw(textureHp, position.x-40+12, position.y-40+70, 56 * ((float)hp / hpMax), 12);
     }
 
     public int getDamage() {
@@ -127,7 +130,7 @@ public class Monster implements Poolable {
         hitBox.setPosition(position);
 
         if (pathStack.isEmpty()) {
-            Player.getInstance().receiveDamage(this);
+            gameScreen.getPlayer().receiveDamage(this);
             deactivate();
         }
     }
@@ -168,7 +171,7 @@ public class Monster implements Poolable {
         hp -= damage*scale;
         if(hp<=0) {
             //добавляем золота и очков игроку
-            Player.getInstance().addGoldandScore(this);
+            gameScreen.getPlayer().addGoldandScore(this);
             deactivate();
         }
     }

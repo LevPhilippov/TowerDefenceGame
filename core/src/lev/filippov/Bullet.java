@@ -15,7 +15,7 @@ public class Bullet implements Poolable {
     private GameScreen gameScreen;
     private Circle hitBox;
     private final float bulletRadius = 8;
-    private final int damage = 25;
+    private int damage;
 
     public Bullet (GameScreen gameScreen) {
         this.gameScreen = gameScreen;
@@ -38,11 +38,12 @@ public class Bullet implements Poolable {
         return active;
     }
 
-    void init (float x, float y, float vx, float vy, float speed) {
+    void init (float x, float y, float vx, float vy, float speed, int damage) {
         position.set(x,y);
         velocity.set(vx,vy);
         velocity.nor();
         velocity.scl(speed);
+        this.damage = damage;
         active = true;
     }
 

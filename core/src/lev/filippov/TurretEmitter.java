@@ -39,6 +39,7 @@ public class TurretEmitter extends ObjectPool<Turret> {
         if (!gameScreen.getMap().isEmpty(cellX, cellY)) {
             return false;
         }
+        //проверка на предмет уже установленной турели (позже заменить - будет модификация карты)
         for (int i = 0; i < activeList.size(); i++) {
             Turret t = activeList.get(i);
             if (t.getCellX() == cellX && t.getCellY() == cellY) {

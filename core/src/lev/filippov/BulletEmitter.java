@@ -15,9 +15,9 @@ public class BulletEmitter extends ObjectPool<Bullet> {
         return new Bullet(gameScreen);
     }
 
-    public void setup(float x, float y, float vx, float vy, float speed){
+    public void setup(float x, float y, float vx, float vy, float speed, int damage){
         Bullet temp = getActiveElement();
-        temp.init(x,y,vx,vy,speed);
+        temp.init(x,y,vx,vy,speed, damage);
     }
 
     public void update(float dt){

@@ -47,12 +47,14 @@ public class Assets {
         }
     }
 
-    // отрисовка шрифта заданного размера из стандартного шрифта
+    // подготовка шрифта заданного размера из стандартного шрифта
+
     public void createStandardFont(int size) {
         FileHandleResolver resolver = new InternalFileHandleResolver();
         assetManager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         assetManager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
         FreetypeFontLoader.FreeTypeFontLoaderParameter fontParameter = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+
         fontParameter.fontFileName = "fonts/gomarice.ttf";
         fontParameter.fontParameters.size = size;
         fontParameter.fontParameters.color = Color.WHITE;
@@ -61,6 +63,7 @@ public class Assets {
         fontParameter.fontParameters.shadowOffsetX = 1;
         fontParameter.fontParameters.shadowOffsetY = 1;
         fontParameter.fontParameters.shadowColor = Color.BLACK;
+
         assetManager.load("fonts/zorque" + size + ".ttf", BitmapFont.class, fontParameter);
     }
     // подвязка TextureAtlas после его загрузки

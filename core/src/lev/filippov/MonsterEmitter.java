@@ -11,7 +11,7 @@ public class MonsterEmitter extends ObjectPool <Monster> {
 
     @Override
     protected Monster newObject() {
-        return new Monster(gameScreen.getMap());
+        return new Monster(gameScreen);
     }
 
     public void render (SpriteBatch batch) {

@@ -20,6 +20,8 @@ public class Turret implements Poolable {
     private float chargeTime;
     private boolean charged;
     private boolean active;
+    private int damage;
+    private float bulletSpeed;
 
     //игровые параметры пушки
     private int cost;
@@ -32,8 +34,11 @@ public class Turret implements Poolable {
         temp = new Vector2();
         this.fireRadius = 500f;
         this.rotationSpeed = 360f;
-        this.fireRate = 1f;
+        this.fireRate = 0.1f;
         this.cost = 50;
+        this.damage = 10;
+        this.bulletSpeed = 500;
+
     }
 
     public int getCost() {
@@ -52,9 +57,11 @@ public class Turret implements Poolable {
     public void update(float dt) {
 //        target = null;
 
-        if (target != null && !isMonsterInRange(target)) {
-            target = null;
+        if (target != null) {
+             if(!isMonsterInRange(target) || !target.isActive())
+                target = null;
         }
+
         if (target == null) {
             float maxDst = fireRadius;
             for (int i = 0; i < gameScreen.getMonsterEmitter().getActiveList().size(); i++) {
@@ -118,7 +125,7 @@ public class Turret implements Poolable {
         if (Math.abs(getAngleToTarget()-angle)<4 && charged) {
             chargeTime = 0.0f;
             float rad = (float)Math.toRadians(angle);
-            gameScreen.getBulletEmitter().setup(position.x, position.y, (float)Math.cos(rad), (float)Math.sin(rad), 500);
+            gameScreen.getBulletEmitter().setup(position.x, position.y, (float)Math.cos(rad), (float)Math.sin(rad), bulletSpeed, damage);
             System.out.println("Fire!");
             charged = false;
         }
