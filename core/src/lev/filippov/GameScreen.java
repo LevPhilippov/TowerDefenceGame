@@ -154,7 +154,7 @@ public class GameScreen implements Screen {
     private void setupMonster(float dt) {
         respTime +=dt;
         if(respTime > 5f) {
-            monsterEmitter.setup(15, MathUtils.random(1,8), -1,0, 100);
+            monsterEmitter.setup(15, MathUtils.random(1,8), 0,0, 100);
             respTime=-10f;
         }
     }

@@ -80,6 +80,7 @@ public class Map {
 
     public void setWall(int cx, int cy) {
         data[cx][cy] = ELEMENT_WALL;
+        updateMapVersion();
     }
 
     public void loadMapFromFile(String mapName) {
