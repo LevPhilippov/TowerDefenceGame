@@ -128,8 +128,8 @@ public class GameScreen implements Screen {
         setupMonster(dt);
         //particleEmitter.setup(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
         //эмиттеры
-        turretEmitter.update(dt);
         monsterEmitter.update(dt);
+        turretEmitter.update(dt);
         bulletEmitter.update(dt);
         particleEmitter.update(dt);
 
@@ -154,7 +154,7 @@ public class GameScreen implements Screen {
     private void setupMonster(float dt) {
         respTime +=dt;
         if(respTime > 5f) {
-            monsterEmitter.setup(6, MathUtils.random(1,8), 0,0, 100);
+            monsterEmitter.setup(15, MathUtils.random(1,8), -1,0, 100);
             respTime=-10f;
         }
     }
