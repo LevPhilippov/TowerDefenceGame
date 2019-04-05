@@ -6,7 +6,6 @@ public class Player {
     private int money;
     private int score;
     private GameScreen gameScreen;
-    private final String message1 = new String("Not enough money!");
 
     public Player(GameScreen gameScreen) {
         this.hp = 100;
@@ -26,17 +25,17 @@ public class Player {
         return score;
     }
 
-    public void addGoldandScoreForMonster(Monster m){
-        money +=m.getCostForDestroying();
-        score+=m.getScoreForDestroying();
+
+    public void addScore(int scorePoints){
+        score+=scorePoints;
     }
 
     public void addMoney(int amount) {
         money+=amount;
     }
 
-    public void receiveDamage(Monster monster) {
-        hp-=monster.getDamage();
+    public void receiveDamage(int damage) {
+        hp-=damage;
         if (hp<=0) {
             hp = 0;
         }
@@ -46,7 +45,7 @@ public class Player {
         if(money>=amount)
             return true;
         else{
-          gameScreen.setTransparence(message1);
+          gameScreen.getInfoEmitter().setup(gameScreen.getSelectedCellX(),gameScreen.getSelectedCellY(), "Not enough money!");
         }
         return false;
     }

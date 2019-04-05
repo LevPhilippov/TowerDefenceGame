@@ -5,13 +5,17 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 public class Turret implements Poolable {
+    //игра и отрисовка
     private GameScreen gameScreen;
+    private TextureRegion[][] allTextures;
+    private int imageX;
+    private int imageY;
     //позиция и угол разворота
-    private TextureRegion texture;
     private Vector2 position;
     private Vector2 temp;
     private int cellX, cellY;
     private float angle;
+
     //вспомогательные поля
     private boolean charged;
     private boolean active;
@@ -32,26 +36,18 @@ public class Turret implements Poolable {
     private Monster target;
 
 
-    public Turret(GameScreen gameScreen) {
+    public Turret(GameScreen gameScreen, TextureRegion[][] allTextures) {
         this.gameScreen = gameScreen;
+        this.allTextures = allTextures;
         position = new Vector2();
         temp = new Vector2();
-//        игровые параметры
-//        this.fireRadius = 500f;
-//        this.rotationSpeed = 360f;
-//        this.fireRate = 0.1f;
-//        this.cost = 50;
-//        this.damage = 10;
-//        this.bulletSpeed = 500;
-
     }
 
     public void init (int cellX, int cellY, TurretType type) {
         //текстуры и координаты
-        this.texture = new TextureRegion(Assets.getInstance().getAtlas().
-        findRegion(type.textureRegionName), type.coordX, type.coordY, type.width, type.height);
-
         this.type = type;
+        this.imageX = type.imageX;
+        this.imageY = type.imageY;
         this.cellX = cellX;
         this.cellY = cellY;
         position.set(cellX*80+40, cellY*80+40);
@@ -69,14 +65,6 @@ public class Turret implements Poolable {
         this.cost = type.cost;
         charged = false;
         chargeTime = 0;
-
-    }
-
-    public void upgrade() {
-        this.type = this.type.upgrade();
-        this.texture = new TextureRegion(Assets.getInstance().getAtlas().
-        findRegion(type.textureRegionName), type.coordX, type.coordY, type.width, type.height);
-        initGameParam();
     }
 
     public int getCost() {
@@ -89,10 +77,9 @@ public class Turret implements Poolable {
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, cellX * 80, cellY * 80, 40, 40, 80, 80, 1, 1, angle);
+        batch.draw(allTextures[imageX][imageY], cellX * 80, cellY * 80, 40, 40, 80, 80, 1, 1, angle);
     }
     public void update(float dt) {
-//        target = null;
 
         if (target != null) {
              if(!isMonsterInRange(target) || !target.isActive())
@@ -183,5 +170,9 @@ public class Turret implements Poolable {
 
     public TurretType getType() {
         return type;
+    }
+
+    public void upgrade() {
+        init(cellX,cellY, type.upgradeTurret);
     }
 }

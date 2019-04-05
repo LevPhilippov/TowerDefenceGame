@@ -28,16 +28,24 @@ public class GameScreen implements Screen {
     private ParticleEmitter particleEmitter;
     private MonsterEmitter monsterEmitter;
     private BulletEmitter bulletEmitter;
+    private InfoEmitter infoEmitter;
     private int selectedCellX, selectedCellY;
     private BitmapFont scoreFont;
     private Stage stage;
     private Player player;
     private String message;
 
+    public int getSelectedCellX() {
+        return selectedCellX;
+    }
+
+    public int getSelectedCellY() {
+        return selectedCellY;
+    }
+
     //GUI
     private Group groupTurretAction;
     private Group groupTurretSelection;
-    private float transparence;
 
 
     public Map getMap() {
@@ -62,6 +70,7 @@ public class GameScreen implements Screen {
         this.particleEmitter = new ParticleEmitter();
         this.monsterEmitter = new MonsterEmitter(this);
         this.bulletEmitter = new BulletEmitter(this);
+        this.infoEmitter = new InfoEmitter(this);
         this.player = new Player(this);
         createGUI();
     }
@@ -78,6 +87,10 @@ public class GameScreen implements Screen {
         return bulletEmitter;
     }
 
+    public InfoEmitter getInfoEmitter() {
+        return infoEmitter;
+    }
+
     @Override
     public void render(float delta) {
         float dt = Gdx.graphics.getDeltaTime();
@@ -90,10 +103,11 @@ public class GameScreen implements Screen {
         batch.draw(selectedCellTexture, selectedCellX * 80, selectedCellY * 80);
         batch.setColor(1, 1, 1, 1);
         //эмиттеры
-        monsterEmitter.render(batch);
         turretEmitter.render(batch);
         bulletEmitter.render(batch);
+        monsterEmitter.render(batch);
         particleEmitter.render(batch);
+        infoEmitter.render(batch, scoreFont);
         //отрисовка скора
         scoreFont.draw(batch, "Score:" + player.getScore(), 20, 700);
         scoreFont.draw(batch, "Gold:" + player.getMoney(), 120, 700);
@@ -107,18 +121,6 @@ public class GameScreen implements Screen {
         stage.draw();
     }
 
-    public void drawMessage(float dt) {
-        if(transparence>=0.0f){
-            scoreFont.setColor(1,1,0,transparence/3);
-            scoreFont.draw(batch, message, selectedCellX*80, selectedCellY*80);
-            transparence -=dt;
-        }
-        scoreFont.setColor(1,1,1,1);
-    }
-    public void setTransparence(String message){
-        transparence = 3.0f;
-        this.message = message;
-    }
 
     public void update(float dt) {
         //создание частицы через particleEmitter
@@ -126,12 +128,13 @@ public class GameScreen implements Screen {
 
 
         setupMonster(dt);
-        //particleEmitter.setup(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
+        //particleEmitter.init(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
         //эмиттеры
         monsterEmitter.update(dt);
         turretEmitter.update(dt);
         bulletEmitter.update(dt);
         particleEmitter.update(dt);
+        infoEmitter.update(dt);
 
         checkCollisions();
 
@@ -141,21 +144,15 @@ public class GameScreen implements Screen {
         bulletEmitter.checkPool();
         particleEmitter.checkPool();
         turretEmitter.checkPool();
+        infoEmitter.checkPool();
     }
 
-    public void setTurret(TurretType type) {
-        if (player.isMoneyEnough(50)) {
-            if (turretEmitter.setup(selectedCellX, selectedCellY, type)) {
-                player.spendMoney(50);
-            }
-        }
-    }
 
     private void setupMonster(float dt) {
         respTime +=dt;
-        if(respTime > 5f) {
+        if(respTime > 1f) {
             monsterEmitter.setup(15, MathUtils.random(1,8), 0,0, 100);
-            respTime=-10f;
+            respTime=-0.1f;
         }
     }
 
@@ -181,9 +178,12 @@ public class GameScreen implements Screen {
                 mousePosition = new Vector2();
                 mousePosition.set(screenX, screenY);
                 ScreenManager.getInstance().getViewport().unproject(mousePosition);
-                if (selectedCellX == (int) (mousePosition.x / 80) && selectedCellY == (int) (mousePosition.y / 80)) {
-                    map.setWall((int) (mousePosition.x / 80), (int) (mousePosition.y / 80));
-                }
+
+                //установка стены на карте
+//                if (selectedCellX == (int) (mousePosition.x / 80) && selectedCellY == (int) (mousePosition.y / 80)) {
+//                    map.setWall((int) (mousePosition.x / 80), (int) (mousePosition.y / 80));
+//                }
+
                 selectedCellX = (int) (mousePosition.x / 80);
                 selectedCellY = (int) (mousePosition.y / 80);
                 return true;
@@ -233,14 +233,14 @@ public class GameScreen implements Screen {
         btnSetTurret1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-             setTurret(TurretType.COMMON);
+             turretEmitter.setTurret(selectedCellX, selectedCellY, TurretType.COMMON);
             }
         });
 
         btnSetTurret2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                setTurret(TurretType.FREEZE);
+                turretEmitter.setTurret(selectedCellX, selectedCellY, TurretType.FREEZE);
             }
         });
 
