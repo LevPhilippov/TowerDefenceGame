@@ -99,7 +99,7 @@ public class GameScreen implements Screen {
         scoreFont.draw(batch, "Gold:" + player.getMoney(), 120, 700);
         scoreFont.draw(batch, "HP:" + player.getHp(), 220, 700);
         //сообщения игроку
-        drawMessage(dt);
+//        drawMessage(dt);
 
 
         batch.end();
@@ -153,9 +153,9 @@ public class GameScreen implements Screen {
 
     private void setupMonster(float dt) {
         respTime +=dt;
-        if(respTime > 0f) {
-            monsterEmitter.setup(15, MathUtils.random(1,8), 0,0, 100);
-            respTime=-0.1f;
+        if(respTime > 5f) {
+            monsterEmitter.setup(6, MathUtils.random(1,8), 0,0, 100);
+            respTime=-10f;
         }
     }
 

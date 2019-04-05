@@ -30,6 +30,14 @@ public class Monster implements Poolable {
     private static final Vector2 WEST = new Vector2(-1,0);
     private static final Vector2 EAST = new Vector2(1,0);
     private static Vector2[] vArray = new Vector2[]{NORTH, SOUTH, EAST, WEST};
+
+    private static int[] North = new int[]{0,1};
+    private static int[] South = new int[]{0,-1};
+    private static int[] West = new int[]{-1,0};
+    private static int[] East = new int[]{1,0};
+    private static int[][] directions = {North,South,West,East};
+    private int[] tempCoord;
+
     private Stack<Vector2> pathStack;
     private int[][] routeMatrix;
     private int mapVersion;
@@ -63,6 +71,8 @@ public class Monster implements Poolable {
         this.pathStack = new Stack<>();
         this.routeMatrix = new int[map.getMAP_WIDTH()][map.getMAP_HEIGHT()];
         this.mapVersion = map.getVersion();
+
+        this.tempCoord = new int[2];
 
         //игровые характеристики
         this.hpMax = 100;
@@ -104,26 +114,26 @@ public class Monster implements Poolable {
 
     public void update(float dt) {
 
-        if(mapVersion != map.getVersion()) {
-            clearMonsterWay();
-            buildRoute();
-            mapVersion = map.getVersion();
-            System.out.println("Rebuild route!");
-        }
+//        if(mapVersion != map.getVersion()) {
+//            clearMonsterWay();
+//            buildRoute();
+//            mapVersion = map.getVersion();
+//            System.out.println("Rebuild route!");
+//        }
 
-        if(position.dst(nextPosition)<2.0f) {
-            System.out.println("В стэке осталось: " + pathStack.size());
-            System.out.println("pop!: " + pathStack.peek());
-            position.set(nextPosition);
-
-            velocity.set(pathStack.peek()).scl(speed);
-
-            Vector2 temp2 = new Vector2().set(pathStack.pop());
-            temp2.scl(80);
-            nextPosition.set(0,0);
-            nextPosition.add(position);
-            nextPosition.add(temp2);
-        }
+//        if(position.dst(nextPosition)<2.0f) {
+//            System.out.println("В стэке осталось: " + pathStack.size());
+//            System.out.println("pop!: " + pathStack.peek());
+//            position.set(nextPosition);
+//
+//            velocity.set(pathStack.peek()).scl(speed);
+//
+//            Vector2 temp2 = new Vector2().set(pathStack.pop());
+//            temp2.scl(80);
+//            nextPosition.set(0,0);
+//            nextPosition.add(position);
+//            nextPosition.add(temp2);
+//        }
 
         position.mulAdd(velocity, dt);
         hitBox.setPosition(position);
@@ -142,6 +152,7 @@ public class Monster implements Poolable {
         this.speed = speed;
         buildRoute();
         nextPosition.set(position);
+        this.velocity.set(1,0).scl(speed);
     }
 
     public void deactivate(){
@@ -179,8 +190,8 @@ public class Monster implements Poolable {
         pathStack.clear();
         buildWaveMatrix();
         printMatrix();
-        defineRoute();
-        System.out.println(pathStack);
+//        defineRoute();
+//        System.out.println(pathStack);
     }
 
     private void printMatrix() {
@@ -195,6 +206,8 @@ public class Monster implements Poolable {
 
     //предположим, что монстр уже на карте
     public void buildWaveMatrix() {
+        int tempX = 0;
+        int tempY = 0;
         waveCounter = 1;
         //составляем матрицу, пока не достигнем точки назначения
         routeMatrix[(int) position.x / 80][(int) position.y / 80] = waveCounter;
@@ -202,9 +215,10 @@ public class Monster implements Poolable {
             for (int i = 0; i < map.getMAP_WIDTH(); i++) {
                 for (int j = 0; j < map.getMAP_HEIGHT(); j++) {
                     if (routeMatrix[i][j] == waveCounter) {
-                        for (Vector2 vector2 : vArray) {
-                            tempVector2.set(i, j).add(vector2);
-                            makeNewWave(waveCounter + 1, tempVector2);
+                        for (int[] dir : directions) {
+                            tempX=i+dir[0];
+                            tempY=j+dir[1];
+                            makeNewWave(waveCounter + 1, tempX, tempY);
                             if (destPointReached){
                                 destPointReached=false;
                                 return;
@@ -242,23 +256,19 @@ public class Monster implements Poolable {
         }
     }
 
-    private void makeNewWave(int newWaveNumber, Vector2 temp) {
-        //если будут проблемы с зависанием - смотри на условия провеки в классе  map - с ними косяк!
-//        int tempX = (int) tempVector2.x;
-//        int tempY = (int) tempVector2.y;
-//
-//        if (map.isExist(tempX,tempY) && map.isEmpty(tempX,tempY) && routeMatrix[tempX][tempY] == 0
-//                || map.isExist(tempX,tempY) && map.isDestination(tempX,tempY)) {
-//            routeMatrix[tempX][tempY] = newWaveNumber;
-//            destPointReached = map.isDestination(tempX,tempY);
-        if(map.isExist(temp)) {
-            if (map.isEmpty(temp) && routeMatrix[(int) temp.x][(int) temp.y] == 0) {
-                routeMatrix[(int) temp.x][(int) temp.y] = newWaveNumber;
+    private void makeNewWave(int newWaveNumber, int tempX, int tempY) {
+        if(map.isExist(tempX, tempY)) {
+            if (map.isEmpty(tempX, tempY) && cellNotInRoute(tempX, tempY)) {
+                routeMatrix[tempX][tempY] = newWaveNumber;
             }
-            if (map.isDestination(temp)) {
-                routeMatrix[(int) temp.x][(int) temp.y] = newWaveNumber;
-                destPointReached = map.isDestination(temp);
+            if (map.isDestination(tempX, tempY)) {
+                destPointReached = true;
+                routeMatrix[tempX][tempY] = -1;
             }
         }
+    }
+
+    private boolean cellNotInRoute(int x, int y) {
+        return routeMatrix[x][y] == 0;
     }
 }
