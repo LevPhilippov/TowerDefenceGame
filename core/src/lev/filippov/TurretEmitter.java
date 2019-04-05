@@ -25,9 +25,16 @@ public class TurretEmitter extends ObjectPool<Turret> {
 
         Turret turret = getActiveElement();
         turret.init(cellX, cellY, type);
-        gameScreen.getPlayer().addMoney(-turret.getCost());
         gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_TURRET());
         return true;
+    }
+
+    public void setTurret(int cellX, int cellY, TurretType type) {
+        if (gameScreen.getPlayer().isMoneyEnough(type.cost)) {
+            if (setup(cellX, cellY, type)) {
+                gameScreen.getPlayer().addMoney(-50);
+            }
+        }
     }
 
     public void render(SpriteBatch batch) {
@@ -55,8 +62,8 @@ public class TurretEmitter extends ObjectPool<Turret> {
         }
         return true;
     }
-
     //проверим условие, есть ли монстры в клетке, в которой мы хотим разместить турель
+
     private boolean isMonstersInCell(int cellX, int cellY) {
         for (Monster monster : gameScreen.getMonsterEmitter().getActiveList()) {
             if((int) monster.getPosition().x/80 == cellX && (int) monster.getPosition().y/80 == cellY) {
@@ -69,7 +76,7 @@ public class TurretEmitter extends ObjectPool<Turret> {
     public boolean destroyTurret(int cellX, int cellY) {
         Turret t = findTurret(cellX, cellY);
         if(isTurretExist(t)) {
-            gameScreen.getPlayer().addMoney(t.getCost()/2);
+            gameScreen.getPlayer().addMoney(t.getTurretCost()/2);
             t.deactivate();
             gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_GRASS());
             return true;
@@ -80,9 +87,9 @@ public class TurretEmitter extends ObjectPool<Turret> {
     public boolean upgradeTurret(int cellX, int cellY) {
         Turret t = findTurret(cellX, cellY);
         if (isTurretExist(t) && isPossibleToUpgrade(t)) {
-            if(gameScreen.getPlayer().isMoneyEnough(t.getCost())) {
+            if(gameScreen.getPlayer().isMoneyEnough(t.getTurretCost())) {
                 t.upgrade();
-                gameScreen.getPlayer().spendMoney(t.getCost());
+                gameScreen.getPlayer().spendMoney(t.getTurretCost());
             }
         }
             return false;
@@ -106,20 +113,12 @@ public class TurretEmitter extends ObjectPool<Turret> {
     }
 
     private boolean isPossibleToUpgrade(Turret t) {
-       if(t.getType().upgradeTurret !=null) {
+       if(t.getTurretType().upgradeTurret !=null) {
            return true;
        }
         System.out.println("Максимальный апгрейд!");
         gameScreen.getInfoEmitter().setup(gameScreen.getSelectedCellX(), gameScreen.getSelectedCellY(), "Already upgraded!");
            return false;
-    }
-
-    public void setTurret(int cellX, int cellY, TurretType type) {
-        if (gameScreen.getPlayer().isMoneyEnough(50)) {
-            if (setup(cellX, cellY, type)) {
-                gameScreen.getPlayer().addMoney(-50);
-            }
-        }
     }
 
 }

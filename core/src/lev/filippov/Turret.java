@@ -2,6 +2,7 @@ package lev.filippov;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 public class Turret implements Poolable {
@@ -22,15 +23,14 @@ public class Turret implements Poolable {
     private float chargeTime; //для проверки готовности к стрельбе
 
     //игровые характеристики
-    private TurretType type;
+    private TurretType turretType;
+    private BulletType bulletType;
     private float rotationSpeed;
     private float fireRadius;
     private float fireRate;
-    private int damage;
+    private int power;
     private float bulletSpeed;
-
-    //игровые параметры пушки
-    private int cost;
+    private int turretCost;
 
     //прочие сущности
     private Monster target;
@@ -45,7 +45,8 @@ public class Turret implements Poolable {
 
     public void init (int cellX, int cellY, TurretType type) {
         //текстуры и координаты
-        this.type = type;
+        this.turretType = type;
+        this.bulletType = type.bulletType;
         this.imageX = type.imageX;
         this.imageY = type.imageY;
         this.cellX = cellX;
@@ -57,18 +58,21 @@ public class Turret implements Poolable {
     }
 
     private void initGameParam() {
-        this.fireRadius = type.fireRadius;
-        this.rotationSpeed = type.rotationSpeed;
-        this.fireRate = type.fireRate;
-        this.damage = type.damage;
-        this.bulletSpeed = type.bulletSpeed;
-        this.cost = type.cost;
+        //параметры пушки
+        this.fireRadius = turretType.fireRadius;
+        this.rotationSpeed = turretType.rotationSpeed;
+        this.fireRate = turretType.fireRate;
+        //параметры пули
+        this.power = bulletType.power;
+        this.bulletSpeed = bulletType.speed;
+        this.turretCost = turretType.cost;
+        //вспомогательные
         charged = false;
         chargeTime = 0;
     }
 
-    public int getCost() {
-        return cost;
+    public int getTurretCost() {
+        return turretCost;
     }
 
     @Override
@@ -149,8 +153,8 @@ public class Turret implements Poolable {
 
         if (Math.abs(getAngleToTarget()-angle)<4 && charged) {
             chargeTime = 0.0f;
-            float rad = (float)Math.toRadians(angle);
-            gameScreen.getBulletEmitter().setup(position.x, position.y, (float)Math.cos(rad), (float)Math.sin(rad), bulletSpeed, damage);
+            float rad = (float)Math.toRadians(angle+ MathUtils.random(-5,5)); //введен разброс
+            gameScreen.getBulletEmitter().setup(position.x, position.y, (float)Math.cos(rad), (float)Math.sin(rad), bulletType, target);
             System.out.println("Fire!");
             charged = false;
         }
@@ -168,11 +172,11 @@ public class Turret implements Poolable {
         return cellY;
     }
 
-    public TurretType getType() {
-        return type;
+    public TurretType getTurretType() {
+        return turretType;
     }
 
     public void upgrade() {
-        init(cellX,cellY, type.upgradeTurret);
+        init(cellX,cellY, turretType.upgradeTurret);
     }
 }
