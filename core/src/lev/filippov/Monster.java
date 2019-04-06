@@ -240,16 +240,18 @@ public class Monster implements Poolable {
         int tempY=dstY;
         path.push(coordMatrix[tempX][tempY]);
         //идем назад от последней позиции (складываем вектора направлений в Стэк)
-
-        while (routeMatrix[tempX][tempY] != 2) {
+//routeMatrix[dstX][dstY] != 2 - это условие давало NPE на 16 - waveCounter!= 1 - is stable.
+        while (waveCounter!=1) {
             for (int[] dir : directions) {
                 tempX = dstX+dir[0];
                 tempY = dstY+dir[1];
+
                 if (map.isExist(tempX, tempY) && routeMatrix[tempX][tempY] == waveCounter) {
                     path.push(coordMatrix[tempX][tempY]);
                     break;
                 }
             }
+
             dstX = tempX;
             dstY = tempY;
             waveCounter--;

@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 public class Map {
+
     private final int MAP_WIDTH = 16;
     private final int MAP_HEIGHT = 9;
 
@@ -36,7 +37,6 @@ public class Map {
         data = new byte[MAP_WIDTH][MAP_HEIGHT];
         textureRegionGrass = Assets.getInstance().getAtlas().findRegion("grass");
         textureRegionRoad = Assets.getInstance().getAtlas().findRegion("road");
-//        textureRegionCursor = Assets.getInstance().getAtlas().findRegion("cursor");
         loadMapFromFile(mapName);
     }
 
@@ -80,6 +80,9 @@ public class Map {
                 }
                 if (data[i][j] == ELEMENT_TURRET) {
                     batch.draw(textureRegionGrass, i * 80, j * 80);
+                }
+                if (data[i][j] == ELEMENT_DESTINATION) {
+                    batch.draw(textureRegionGrass, i*80, j*80);
                 }
             }
         }

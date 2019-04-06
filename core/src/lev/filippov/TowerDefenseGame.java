@@ -13,7 +13,7 @@ public class TowerDefenseGame extends Game {
         batch = new SpriteBatch();
         //инициализация и передача управления к Singleton ScreenManager
         ScreenManager.getInstance().init(this, batch);
-        ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.MENU);
+        ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
     }
 
     @Override

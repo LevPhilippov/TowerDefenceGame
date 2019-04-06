@@ -12,10 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-
-import java.sql.Struct;
 
 public class GameScreen implements Screen {
 
@@ -34,11 +33,14 @@ public class GameScreen implements Screen {
     private Stage stage;
     private Player player;
     private float respTime;
+    private Star16 star16;
+    private BitmapFont winFont;
 
 
     //GUI
     private Group groupTurretAction;
     private Group groupTurretSelection;
+    private Group winScrenGroup;
 
 
     public GameScreen(SpriteBatch batch, Camera camera) {
@@ -49,7 +51,8 @@ public class GameScreen implements Screen {
     //метод вызывается при установке экрана как текущего
     @Override
     public void show() {
-        this.map = new Map("level01.map");
+        this.player = ScreenManager.getInstance().getPlayer();
+        this.map = new Map("level_"+ player.getRoundProgress()+ ".map");
         this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
         this.turretEmitter = new TurretEmitter(this);
@@ -57,7 +60,8 @@ public class GameScreen implements Screen {
         this.monsterEmitter = new MonsterEmitter(this);
         this.bulletEmitter = new BulletEmitter(this);
         this.infoEmitter = new InfoEmitter(this);
-        this.player = new Player(this);
+        this.star16 = new Star16(this);
+        this.winFont = Assets.getInstance().getAssetManager().get("fonts/zorque36.ttf");
         createGUI();
     }
     public void createGUI() {
@@ -89,15 +93,23 @@ public class GameScreen implements Screen {
         skin.addRegions(Assets.getInstance().getAtlas());
 
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        TextButton.TextButtonStyle winStyle = new TextButton.TextButtonStyle();
 
         textButtonStyle.up = skin.getDrawable("shortButton");
         textButtonStyle.font = scoreFont;
+
+        winStyle.up = skin.getDrawable("simpleButton");
+        winStyle.font = winFont;
         skin.add("simpleSkin", textButtonStyle);
+        skin.add("winSkin", winStyle);
+
+
+
 
         //подготовка групп кнопок
         //кнопки группы "действие" (первичная)
         groupTurretAction = new Group();
-        groupTurretAction.setPosition(250, 600);
+        groupTurretAction.setPosition(400, 600);
         //создание кнопок
         Button btnSetTurret = new TextButton("Set", skin, "simpleSkin");
         Button btnUpgradeTurret = new TextButton("Upg", skin, "simpleSkin");
@@ -149,10 +161,6 @@ public class GameScreen implements Screen {
             }
         });
 
-        stage.addActor(groupTurretSelection);
-        stage.addActor(groupTurretAction);
-
-//        upperPanel = new UpperPanel(playerInfo, stage, 0, 720 - 60);
 
         btnSetTurret.addListener(new ChangeListener() {
             @Override
@@ -160,6 +168,24 @@ public class GameScreen implements Screen {
                 groupTurretSelection.setVisible(!groupTurretSelection.isVisible());
             }
         });
+
+        winScrenGroup = new Group();
+        winScrenGroup.setPosition(480, 250);
+        winScrenGroup.setVisible(false);
+        Button nextLevelButton = new TextButton("Go to next level", skin, "winSkin");
+        nextLevelButton.setPosition(0,0);
+        winScrenGroup.addActor(nextLevelButton);
+
+        nextLevelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
+            }
+        });
+
+        stage.addActor(groupTurretSelection);
+        stage.addActor(groupTurretAction);
+        stage.addActor(winScrenGroup);
 
         skin.dispose();
     }
@@ -182,10 +208,13 @@ public class GameScreen implements Screen {
     public BulletEmitter getBulletEmitter() {
         return bulletEmitter;
     }
-
+    public Player getPlayer() {
+        return player;
+    }
     public InfoEmitter getInfoEmitter() {
         return infoEmitter;
     }
+
     @Override
     public void render(float delta) {
         float dt = Gdx.graphics.getDeltaTime();
@@ -193,6 +222,7 @@ public class GameScreen implements Screen {
         batch.begin();
 
         map.render(batch);
+        star16.render(batch);
         // рисуем клетку под курсором мыши
         batch.setColor(1, 1, 0, 0.5f);
         batch.draw(selectedCellTexture, selectedCellX * 80, selectedCellY * 80);
@@ -205,8 +235,9 @@ public class GameScreen implements Screen {
         infoEmitter.render(batch, scoreFont);
         //отрисовка скора
         scoreFont.draw(batch, "Score:" + player.getScore(), 20, 700);
-        scoreFont.draw(batch, "Gold:" + player.getMoney(), 120, 700);
-        scoreFont.draw(batch, "HP:" + player.getHp(), 220, 700);
+        scoreFont.draw(batch, "Gold:" + player.getMoney(), 20, 650);
+        scoreFont.draw(batch, "HP:" + player.getHp(), 20, 600);
+        scoreFont.draw(batch, "Remaining Time:" + star16.getTimer(),120, 700 );
         //сообщения игроку
 //        drawMessage(dt);
 
@@ -218,6 +249,7 @@ public class GameScreen implements Screen {
     public void update(float dt) {
         //создание частицы через particleEmitter
         map.update(dt);
+        star16.update(dt);
 
 
         setupMonster(dt);
@@ -241,9 +273,9 @@ public class GameScreen implements Screen {
     }
     private void setupMonster(float dt) {
         respTime +=dt;
-        if(respTime > 1f) {
-            monsterEmitter.setup(15, MathUtils.random(1,8), 0,0, 100);
-            respTime=-0.1f;
+        if(respTime > 5f) {
+            monsterEmitter.setup(MathUtils.random(7,10), MathUtils.random(3,5), 0,0, 100);
+            respTime=4.5f;
         }
     }
     private void checkCollisions(){
@@ -259,7 +291,12 @@ public class GameScreen implements Screen {
             }
         }
     }
-    //метод вызывается при изменении размера экрана
+
+    public void showWinScreen(){
+        groupTurretAction.setVisible(false);
+        groupTurretSelection.setVisible(false);
+        winScrenGroup.setVisible(true);
+    }
     @Override
     public void resize(int width, int height) {
         ScreenManager.getInstance().resize(width, height);
@@ -279,8 +316,5 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
 
-    }
-    public Player getPlayer() {
-        return player;
     }
 }

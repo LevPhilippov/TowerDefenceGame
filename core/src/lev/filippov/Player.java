@@ -6,11 +6,13 @@ public class Player {
     private int money;
     private int score;
     private GameScreen gameScreen;
+    private int roundProgress;
 
     public Player(GameScreen gameScreen) {
         this.hp = 100;
         this.gameScreen = gameScreen;
         this.money = 300;
+        this.roundProgress = 1;
     }
 
     public int getHp() {
@@ -52,5 +54,14 @@ public class Player {
 
     public void spendMoney (int amount) {
         money-=amount;
+    }
+
+    public int getRoundProgress() {
+        return roundProgress;
+    }
+
+    public void roundCompleted() {
+        roundProgress++;//это HP, SCORE, MONEY хорошо бы хранить в файле, но нет времени заниматься этим сейчас
+        gameScreen.showWinScreen();
     }
 }
