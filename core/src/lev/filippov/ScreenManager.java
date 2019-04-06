@@ -13,7 +13,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class ScreenManager {
     public enum ScreenType {
-        GAME
+        GAME,
+        MENU
     }
 
     public static final int WORLD_WIDTH = 1280;
@@ -21,6 +22,7 @@ public class ScreenManager {
 
     private TowerDefenseGame game;
     private SpriteBatch batch;
+    private MenuScreen menuScreen;
     private GameScreen gameScreen;
     private LoadingScreen loadingScreen;
     private Screen targetScreen;
@@ -45,6 +47,7 @@ public class ScreenManager {
         this.batch = batch;
         this.camera = new OrthographicCamera(WORLD_WIDTH, WORLD_HEIGHT);
         this.viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+        this.menuScreen = new MenuScreen(batch, camera);
         this.gameScreen = new GameScreen(batch, camera);
         this.loadingScreen = new LoadingScreen(batch);
     }
@@ -74,6 +77,10 @@ public class ScreenManager {
         switch (type) {
             case GAME:
                 targetScreen = gameScreen;
+                Assets.getInstance().loadAssets(ScreenType.GAME);
+                break;
+            case MENU:
+                targetScreen = menuScreen;
                 Assets.getInstance().loadAssets(ScreenType.GAME);
                 break;
         }

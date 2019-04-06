@@ -33,36 +33,22 @@ public class GameScreen implements Screen {
     private BitmapFont scoreFont;
     private Stage stage;
     private Player player;
-    private String message;
+    private float respTime;
 
-    public int getSelectedCellX() {
-        return selectedCellX;
-    }
-
-    public int getSelectedCellY() {
-        return selectedCellY;
-    }
 
     //GUI
     private Group groupTurretAction;
     private Group groupTurretSelection;
 
 
-    public Map getMap() {
-        return map;
-    }
-
-    private float respTime;
-
-
     public GameScreen(SpriteBatch batch, Camera camera) {
         this.batch = batch;
         this.camera = camera;
     }
+
     //метод вызывается при установке экрана как текущего
     @Override
     public void show() {
-        this.message = "";
         this.map = new Map("level01.map");
         this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
@@ -73,101 +59,6 @@ public class GameScreen implements Screen {
         this.infoEmitter = new InfoEmitter(this);
         this.player = new Player(this);
         createGUI();
-    }
-
-    public ParticleEmitter getParticleEmitter() {
-        return particleEmitter;
-    }
-
-    public MonsterEmitter getMonsterEmitter() {
-        return monsterEmitter;
-    }
-
-    public BulletEmitter getBulletEmitter() {
-        return bulletEmitter;
-    }
-
-    public InfoEmitter getInfoEmitter() {
-        return infoEmitter;
-    }
-
-    @Override
-    public void render(float delta) {
-        float dt = Gdx.graphics.getDeltaTime();
-        update(dt);
-        batch.begin();
-
-        map.render(batch);
-        // рисуем клетку под курсором мыши
-        batch.setColor(1, 1, 0, 0.5f);
-        batch.draw(selectedCellTexture, selectedCellX * 80, selectedCellY * 80);
-        batch.setColor(1, 1, 1, 1);
-        //эмиттеры
-        turretEmitter.render(batch);
-        bulletEmitter.render(batch);
-        monsterEmitter.render(batch);
-        particleEmitter.render(batch);
-        infoEmitter.render(batch, scoreFont);
-        //отрисовка скора
-        scoreFont.draw(batch, "Score:" + player.getScore(), 20, 700);
-        scoreFont.draw(batch, "Gold:" + player.getMoney(), 120, 700);
-        scoreFont.draw(batch, "HP:" + player.getHp(), 220, 700);
-        //сообщения игроку
-//        drawMessage(dt);
-
-
-        batch.end();
-
-        stage.draw();
-    }
-
-
-    public void update(float dt) {
-        //создание частицы через particleEmitter
-        map.update(dt);
-
-
-        setupMonster(dt);
-        //particleEmitter.init(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
-        //эмиттеры
-        monsterEmitter.update(dt);
-        turretEmitter.update(dt);
-        bulletEmitter.update(dt);
-        particleEmitter.update(dt);
-        infoEmitter.update(dt);
-
-        checkCollisions();
-
-        stage.act(dt);
-
-        monsterEmitter.checkPool();
-        bulletEmitter.checkPool();
-        particleEmitter.checkPool();
-        turretEmitter.checkPool();
-        infoEmitter.checkPool();
-    }
-
-
-    private void setupMonster(float dt) {
-        respTime +=dt;
-        if(respTime > 1f) {
-            monsterEmitter.setup(15, MathUtils.random(1,8), 0,0, 100);
-            respTime=-0.1f;
-        }
-    }
-
-    private void checkCollisions(){
-        Monster m;
-        Bullet b;
-        for (int i = 0; i <monsterEmitter.getActiveList().size() ; i++) {
-             m = monsterEmitter.getActiveList().get(i);
-            for (int j = 0; j <bulletEmitter.getActiveList().size() ; j++) {
-                b =bulletEmitter.getActiveList().get(j);
-                if(m.getHitBox().overlaps(b.getHitBox())){
-                    b.makeDamage(m);
-                }
-            }
-        }
     }
     public void createGUI() {
         stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
@@ -204,14 +95,14 @@ public class GameScreen implements Screen {
         skin.add("simpleSkin", textButtonStyle);
 
         //подготовка групп кнопок
-            //кнопки группы "действие" (первичная)
+        //кнопки группы "действие" (первичная)
         groupTurretAction = new Group();
         groupTurretAction.setPosition(250, 600);
-                //создание кнопок
+        //создание кнопок
         Button btnSetTurret = new TextButton("Set", skin, "simpleSkin");
         Button btnUpgradeTurret = new TextButton("Upg", skin, "simpleSkin");
         Button btnDestroyTurret = new TextButton("Dst", skin, "simpleSkin");
-                //разменение внутри Stage
+        //разменение внутри Stage
         btnSetTurret.setPosition(10, 10);
         btnUpgradeTurret.setPosition(110, 10);
         btnDestroyTurret.setPosition(210, 10);
@@ -219,7 +110,7 @@ public class GameScreen implements Screen {
         groupTurretAction.addActor(btnUpgradeTurret);
         groupTurretAction.addActor(btnDestroyTurret);
 
-            //кнопки группы "установка" (дочерняя)
+        //кнопки группы "установка" (дочерняя)
         groupTurretSelection = new Group();
         groupTurretSelection.setVisible(false);
         groupTurretSelection.setPosition(250, 500);
@@ -233,7 +124,7 @@ public class GameScreen implements Screen {
         btnSetTurret1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-             turretEmitter.setTurret(selectedCellX, selectedCellY, TurretType.COMMON);
+                turretEmitter.setTurret(selectedCellX, selectedCellY, TurretType.COMMON);
             }
         });
 
@@ -272,11 +163,103 @@ public class GameScreen implements Screen {
 
         skin.dispose();
     }
+    //getters
+    public Map getMap() {
+        return map;
+    }
+    public int getSelectedCellX() {
+        return selectedCellX;
+    }
+    public int getSelectedCellY() {
+        return selectedCellY;
+    }
+    public ParticleEmitter getParticleEmitter() {
+        return particleEmitter;
+    }
+    public MonsterEmitter getMonsterEmitter() {
+        return monsterEmitter;
+    }
+    public BulletEmitter getBulletEmitter() {
+        return bulletEmitter;
+    }
+
+    public InfoEmitter getInfoEmitter() {
+        return infoEmitter;
+    }
+    @Override
+    public void render(float delta) {
+        float dt = Gdx.graphics.getDeltaTime();
+        update(dt);
+        batch.begin();
+
+        map.render(batch);
+        // рисуем клетку под курсором мыши
+        batch.setColor(1, 1, 0, 0.5f);
+        batch.draw(selectedCellTexture, selectedCellX * 80, selectedCellY * 80);
+        batch.setColor(1, 1, 1, 1);
+        //эмиттеры
+        turretEmitter.render(batch);
+        bulletEmitter.render(batch);
+        monsterEmitter.render(batch);
+        particleEmitter.render(batch);
+        infoEmitter.render(batch, scoreFont);
+        //отрисовка скора
+        scoreFont.draw(batch, "Score:" + player.getScore(), 20, 700);
+        scoreFont.draw(batch, "Gold:" + player.getMoney(), 120, 700);
+        scoreFont.draw(batch, "HP:" + player.getHp(), 220, 700);
+        //сообщения игроку
+//        drawMessage(dt);
 
 
+        batch.end();
 
+        stage.draw();
+    }
+    public void update(float dt) {
+        //создание частицы через particleEmitter
+        map.update(dt);
+
+
+        setupMonster(dt);
+        //particleEmitter.init(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
+        //эмиттеры
+        monsterEmitter.update(dt);
+        turretEmitter.update(dt);
+        bulletEmitter.update(dt);
+        particleEmitter.update(dt);
+        infoEmitter.update(dt);
+
+        checkCollisions();
+
+        stage.act(dt);
+
+        monsterEmitter.checkPool();
+        bulletEmitter.checkPool();
+        particleEmitter.checkPool();
+        turretEmitter.checkPool();
+        infoEmitter.checkPool();
+    }
+    private void setupMonster(float dt) {
+        respTime +=dt;
+        if(respTime > 1f) {
+            monsterEmitter.setup(15, MathUtils.random(1,8), 0,0, 100);
+            respTime=-0.1f;
+        }
+    }
+    private void checkCollisions(){
+        Monster m;
+        Bullet b;
+        for (int i = 0; i <monsterEmitter.getActiveList().size() ; i++) {
+             m = monsterEmitter.getActiveList().get(i);
+            for (int j = 0; j <bulletEmitter.getActiveList().size() ; j++) {
+                b =bulletEmitter.getActiveList().get(j);
+                if(m.getHitBox().overlaps(b.getHitBox())){
+                    b.makeDamage(m);
+                }
+            }
+        }
+    }
     //метод вызывается при изменении размера экрана
-
     @Override
     public void resize(int width, int height) {
         ScreenManager.getInstance().resize(width, height);
@@ -285,22 +268,18 @@ public class GameScreen implements Screen {
     public void pause() {
 
     }
-
     @Override
     public void resume() {
 
     }
-
     @Override
     public void hide() {
 
     }
-
     @Override
     public void dispose() {
 
     }
-
     public Player getPlayer() {
         return player;
     }
