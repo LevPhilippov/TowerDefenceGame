@@ -10,6 +10,7 @@ import java.io.IOException;
 public class Map {
     private final int MAP_WIDTH = 16;
     private final int MAP_HEIGHT = 9;
+    private String fileName;
 
     private final int ELEMENT_GRASS = 0;
     private final int ELEMENT_ROAD = 1;
@@ -32,10 +33,15 @@ public class Map {
     }
 
     public Map(String mapName) {
+        this.fileName = mapName;
         data = new byte[MAP_WIDTH][MAP_HEIGHT];
         textureRegionGrass = Assets.getInstance().getAtlas().findRegion("grass");
         textureRegionRoad = Assets.getInstance().getAtlas().findRegion("road");
         loadMapFromFile(mapName);
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public int getVersion() {
@@ -98,10 +104,12 @@ public class Map {
     public void loadMapFromFile(String mapName) {
         this.data = new byte[MAP_WIDTH][MAP_HEIGHT];
         BufferedReader reader = null;
+        String str;
         try {
             reader = Gdx.files.internal("maps/" + mapName).reader(8192);
+            while ((str = reader.readLine()).equals("# map-up"))
             for (int i = 0; i < 9; i++) {
-                String str = reader.readLine();
+                str = reader.readLine();
                 for (int j = 0; j < 16; j++) {
                     char symb = str.charAt(j);
                     if (symb == '1') {

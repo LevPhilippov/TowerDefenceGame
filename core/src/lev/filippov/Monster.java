@@ -16,7 +16,7 @@ public class Monster implements Poolable {
     private TextureRegion textureHp;
     private Vector2 position;
     private Vector2 velocity;
-    private float speed = 100;
+    private float speed;
     private boolean active;
     private Circle hitBox;
     private int scale;
@@ -86,15 +86,24 @@ public class Monster implements Poolable {
 
 
         //игровые характеристики
-        this.hpMax = 100;
-        this.hp = this.hpMax;
         this.scale = 1;
         this.costForDestroying = 10;
         this.scoreForDestroying = 100;
         this.damage = 10;
+        this.speed = 100;
 
         //хитбокс
         this.hitBox = new Circle(position, 40);
+    }
+
+    public void init (float x, float y, int monsterHP) {
+        clearMonsterWay();
+        this.hpMax = monsterHP;
+        hp = hpMax;
+        position.set(x*80+40,y*80+40);
+        active = true;
+        speed = 100;
+        buildRoute();
     }
 
     public void update(float dt) {
@@ -142,15 +151,6 @@ public class Monster implements Poolable {
 
     public int getDamage() {
         return damage;
-    }
-
-    public void init (float x, float y, float vx, float vy, float speed) {
-        clearMonsterWay();
-        hp = hpMax;
-        position.set(x*80+40,y*80+40);
-        active = true;
-        this.speed = speed;
-        buildRoute();
     }
 
     public void deactivate(){

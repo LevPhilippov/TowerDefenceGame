@@ -26,8 +26,8 @@ public class MonsterEmitter extends ObjectPool <Monster> {
         }
     }
 
-    public void setup(float x, float y, float vx, float vy, float speed) {
+    public void setup(float x, float y, int monsterHP) {
         Monster temp = getActiveElement();
-        temp.init(x,y,vx,vy,speed);
+        temp.init(x,y, monsterHP);
     }
 }

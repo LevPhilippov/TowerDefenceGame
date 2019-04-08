@@ -24,7 +24,6 @@ public class GameScreen implements Screen {
     private TurretEmitter turretEmitter;
     private TextureRegion selectedCellTexture;
     private ParticleEmitter particleEmitter;
-    private MonsterEmitter monsterEmitter;
     private BulletEmitter bulletEmitter;
     private InfoEmitter infoEmitter;
     private int selectedCellX, selectedCellY;
@@ -33,14 +32,17 @@ public class GameScreen implements Screen {
     private Player player;
     private float respTime;
     private Star16 star16;
+    private MonsterWaveController monsterWaveController;
+
     private BitmapFont winFont;
 
+    private boolean levelCompleted;
 
-    //GUI
-    private Group groupTurretAction;
-    private Group groupTurretSelection;
-    private Group winScrenGroup;
 
+//    //GUI
+//    private Group groupTurretAction;
+//    private Group groupTurretSelection;
+//    private Group winScrenGroup;
 
     public GameScreen(SpriteBatch batch, Camera camera) {
         this.batch = batch;
@@ -48,6 +50,7 @@ public class GameScreen implements Screen {
     }
 
     //метод вызывается при установке экрана как текущего
+
     @Override
     public void show() {
         this.player = ScreenManager.getInstance().getPlayer();
@@ -56,139 +59,33 @@ public class GameScreen implements Screen {
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
         this.turretEmitter = new TurretEmitter(this);
         this.particleEmitter = new ParticleEmitter();
-        this.monsterEmitter = new MonsterEmitter(this);
         this.bulletEmitter = new BulletEmitter(this);
         this.infoEmitter = new InfoEmitter(this);
         this.star16 = new Star16(this);
         this.winFont = Assets.getInstance().getAssetManager().get("fonts/zorque36.ttf");
-        createGUI();
+        this.monsterWaveController = new MonsterWaveController(this);
+        GUICreator.createGUI(this);
     }
-    public void createGUI() {
-        stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
 
-        InputProcessor myProc = new InputAdapter() {
-            @Override
-            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-                mousePosition = new Vector2();
-                mousePosition.set(screenX, screenY);
-                ScreenManager.getInstance().getViewport().unproject(mousePosition);
-
-                //установка стены на карте
-//                if (selectedCellX == (int) (mousePosition.x / 80) && selectedCellY == (int) (mousePosition.y / 80)) {
-//                    map.setWall((int) (mousePosition.x / 80), (int) (mousePosition.y / 80));
-//                }
-
-                selectedCellX = (int) (mousePosition.x / 80);
-                selectedCellY = (int) (mousePosition.y / 80);
-                return true;
-            }
-        };
-
-        InputMultiplexer inputMultiplexer = new InputMultiplexer(stage, myProc);
-        Gdx.input.setInputProcessor(inputMultiplexer);
-
-        //шкура для кнопок
-        Skin skin = new Skin();
-        skin.addRegions(Assets.getInstance().getAtlas());
-
-        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-        TextButton.TextButtonStyle winStyle = new TextButton.TextButtonStyle();
-
-        textButtonStyle.up = skin.getDrawable("shortButton");
-        textButtonStyle.font = scoreFont;
-
-        winStyle.up = skin.getDrawable("simpleButton");
-        winStyle.font = winFont;
-        skin.add("simpleSkin", textButtonStyle);
-        skin.add("winSkin", winStyle);
-
-
-
-
-        //подготовка групп кнопок
-        //кнопки группы "действие" (первичная)
-        groupTurretAction = new Group();
-        groupTurretAction.setPosition(400, 600);
-        //создание кнопок
-        Button btnSetTurret = new TextButton("Set", skin, "simpleSkin");
-        Button btnUpgradeTurret = new TextButton("Upg", skin, "simpleSkin");
-        Button btnDestroyTurret = new TextButton("Dst", skin, "simpleSkin");
-        //разменение внутри Stage
-        btnSetTurret.setPosition(10, 10);
-        btnUpgradeTurret.setPosition(110, 10);
-        btnDestroyTurret.setPosition(210, 10);
-        groupTurretAction.addActor(btnSetTurret);
-        groupTurretAction.addActor(btnUpgradeTurret);
-        groupTurretAction.addActor(btnDestroyTurret);
-
-        //кнопки группы "установка" (дочерняя)
-        groupTurretSelection = new Group();
-        groupTurretSelection.setVisible(false);
-        groupTurretSelection.setPosition(250, 500);
-        Button btnSetTurret1 = new TextButton("T1", skin, "simpleSkin");
-        Button btnSetTurret2 = new TextButton("T2", skin, "simpleSkin");
-        btnSetTurret1.setPosition(10, 10);
-        btnSetTurret2.setPosition(110, 10);
-        groupTurretSelection.addActor(btnSetTurret1);
-        groupTurretSelection.addActor(btnSetTurret2);
-
-        btnSetTurret1.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                turretEmitter.setup(selectedCellX, selectedCellY, "COMMON");
-            }
-        });
-
-        btnSetTurret2.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                turretEmitter.setup(selectedCellX, selectedCellY, "FREEZE");
-            }
-        });
-
-        btnDestroyTurret.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                turretEmitter.destroyTurret(selectedCellX, selectedCellY);
-            }
-        });
-
-        btnUpgradeTurret.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                turretEmitter.upgradeTurret(selectedCellX, selectedCellY);
-            }
-        });
-
-
-        btnSetTurret.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                groupTurretSelection.setVisible(!groupTurretSelection.isVisible());
-            }
-        });
-
-        winScrenGroup = new Group();
-        winScrenGroup.setPosition(480, 250);
-        winScrenGroup.setVisible(false);
-        Button nextLevelButton = new TextButton("Go to next level", skin, "winSkin");
-        nextLevelButton.setPosition(0,0);
-        winScrenGroup.addActor(nextLevelButton);
-
-        nextLevelButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
-            }
-        });
-
-        stage.addActor(groupTurretSelection);
-        stage.addActor(groupTurretAction);
-        stage.addActor(winScrenGroup);
-
-        skin.dispose();
+    //getters & setters
+    public TurretEmitter getTurretEmitter() {
+        return turretEmitter;
     }
-    //getters
+    public void setLevelCompleted(boolean levelCompleted) {
+        this.levelCompleted = levelCompleted;
+    }
+    public SpriteBatch getBatch() {
+        return batch;
+    }
+    public void setSelectedCellX(int selectedCellX) {
+        this.selectedCellX = selectedCellX;
+    }
+    public void setSelectedCellY(int selectedCellY) {
+        this.selectedCellY = selectedCellY;
+    }
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
     public Map getMap() {
         return map;
     }
@@ -202,7 +99,7 @@ public class GameScreen implements Screen {
         return particleEmitter;
     }
     public MonsterEmitter getMonsterEmitter() {
-        return monsterEmitter;
+        return monsterWaveController.getMonsterEmitter();
     }
     public BulletEmitter getBulletEmitter() {
         return bulletEmitter;
@@ -229,72 +126,52 @@ public class GameScreen implements Screen {
         //эмиттеры
         turretEmitter.render(batch);
         bulletEmitter.render(batch);
-        monsterEmitter.render(batch);
+        monsterWaveController.render(batch);
+//        monsterEmitter.render(batch);
         particleEmitter.render(batch);
         infoEmitter.render(batch, scoreFont);
         //отрисовка скора
         scoreFont.draw(batch, "Score:" + player.getScore(), 20, 700);
         scoreFont.draw(batch, "Gold:" + player.getMoney(), 20, 650);
         scoreFont.draw(batch, "HP:" + player.getHp(), 20, 600);
-        scoreFont.draw(batch, "Remaining Time:" + star16.getTimer(),120, 700 );
-        //сообщения игроку
-//        drawMessage(dt);
+        scoreFont.draw(batch, "Time remains: " + (int)monsterWaveController.getWaveReverseTimer(),120, 700 );
+        scoreFont.draw(batch, "Next wave in: " + (int)monsterWaveController.getPauseReverseTimer(),120, 650 );
+        scoreFont.draw(batch, "Current wave: " + (int)monsterWaveController.getCurrentWave(),120, 600 );
 
 
         batch.end();
 
         stage.draw();
     }
+
     public void update(float dt) {
         //создание частицы через particleEmitter
         map.update(dt);
         star16.update(dt);
 
 
-        setupMonster(dt);
-        //particleEmitter.init(640, 360, MathUtils.random(-20.0f, 20.0f), MathUtils.random(20.0f, 80.0f), 0.9f, 1.0f, 0.2f, 1, 0, 0, 1, 1, 1, 0, 1);
         //эмиттеры
-        monsterEmitter.update(dt);
+        monsterWaveController.update(dt);
         turretEmitter.update(dt);
         bulletEmitter.update(dt);
         particleEmitter.update(dt);
         infoEmitter.update(dt);
 
-        checkCollisions();
+        CheckCollisonServise.checkCollision(this);
 
         stage.act(dt);
 
-        monsterEmitter.checkPool();
+        monsterWaveController.checkPool();
         bulletEmitter.checkPool();
         particleEmitter.checkPool();
         turretEmitter.checkPool();
         infoEmitter.checkPool();
     }
-    private void setupMonster(float dt) {
-        respTime +=dt;
-        if(respTime > 5f) {
-            monsterEmitter.setup(MathUtils.random(7,10), MathUtils.random(3,5), 0,0, 100);
-            respTime=4.5f;
-        }
-    }
-    private void checkCollisions(){
-        Monster m;
-        Bullet b;
-        for (int i = 0; i <monsterEmitter.getActiveList().size() ; i++) {
-             m = monsterEmitter.getActiveList().get(i);
-            for (int j = 0; j <bulletEmitter.getActiveList().size() ; j++) {
-                b =bulletEmitter.getActiveList().get(j);
-                if(m.getHitBox().overlaps(b.getHitBox())){
-                    b.makeDamage(m);
-                }
-            }
-        }
-    }
 
     public void showWinScreen(){
-        groupTurretAction.setVisible(false);
-        groupTurretSelection.setVisible(false);
-        winScrenGroup.setVisible(true);
+//        groupTurretAction.setVisible(false);
+//        groupTurretSelection.setVisible(false);
+//        winScrenGroup.setVisible(true);
     }
     @Override
     public void resize(int width, int height) {
