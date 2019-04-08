@@ -3,13 +3,11 @@ package lev.filippov;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class Map {
 
+public class Map {
     private final int MAP_WIDTH = 16;
     private final int MAP_HEIGHT = 9;
 

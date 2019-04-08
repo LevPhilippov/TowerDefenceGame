@@ -1,15 +1,47 @@
 package lev.filippov;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.HashMap;
 
 public class TurretEmitter extends ObjectPool<Turret> {
     private GameScreen gameScreen;
     private TextureRegion[][] allTextures;
+    private HashMap<String, TurretTemplate> turretTemplates;
 
     public TurretEmitter(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         this.allTextures = Assets.getInstance().getAtlas().findRegion("turrets").split(80,80);
+        this.turretTemplates = new HashMap<String, TurretTemplate>();
+        loadTemplates();
+    }
+
+    private void loadTemplates() {
+        BufferedReader reader;
+        try{
+            reader = Gdx.files.internal("armory.dat").reader(8192);
+            String str;
+            Boolean read=false;
+            while ((str = reader.readLine())!=null) {
+                if(str.equals("# turrets-down"))
+                    break;
+                if(str.equals("# turrets-up")) {
+                    read = true;
+                }
+                if(read) {
+                    TurretTemplate template = new TurretTemplate(str);
+                    turretTemplates.put(template.getName(), template);
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -17,23 +49,25 @@ public class TurretEmitter extends ObjectPool<Turret> {
         return new Turret(gameScreen, allTextures);
     }
 
-    public boolean setup(int cellX, int cellY, TurretType type) {
-        if (!canIDeployItHere(cellX, cellY)) {
-       //     gameScreen.getInfoEmitter().setup(cellX,cellY, "Can't be deployed here!");
-            return false;
-        }
+//    public boolean setup(int cellX, int cellY, String turretTemplateName) {
+//        if (!canIDeployItHere(cellX, cellY)) {
+//            return false;
+//        }
+//
+//        Turret turret = getActiveElement();
+//        turret.init(cellX, cellY, turretTemplates.get(turretTemplateName));
+//        gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_TURRET());
+//        return true;
+//    }
 
-        Turret turret = getActiveElement();
-        turret.init(cellX, cellY, type);
-        gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_TURRET());
-        return true;
-    }
-
-    public void setTurret(int cellX, int cellY, TurretType type) {
-        if (gameScreen.getPlayer().isMoneyEnough(type.cost)) {
-            if (setup(cellX, cellY, type)) {
-                gameScreen.getPlayer().addMoney(-50);
-            }
+    public void setup (int cellX, int cellY, String turretTemplateName) {
+        TurretTemplate template = turretTemplates.get(turretTemplateName);
+        if (gameScreen.getPlayer().isMoneyEnough(template.getCost()) && canIDeployItHere(cellX,cellY)) {
+            Turret turret = getActiveElement();
+            turret.init(cellX, cellY, template);
+            gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_TURRET());
+            gameScreen.getPlayer().addMoney(-50);
+            gameScreen.getInfoEmitter().setup(cellX,cellY,"-50");
         }
     }
 
@@ -88,7 +122,7 @@ public class TurretEmitter extends ObjectPool<Turret> {
         Turret t = findTurret(cellX, cellY);
         if (isTurretExist(t) && isPossibleToUpgrade(t)) {
             if(gameScreen.getPlayer().isMoneyEnough(t.getTurretCost())) {
-                t.upgrade();
+                t.init(cellX, cellY, turretTemplates.get(t.getTurretTemplate().getUpgradedTurretName()));
                 gameScreen.getPlayer().spendMoney(t.getTurretCost());
             }
         }
@@ -113,12 +147,14 @@ public class TurretEmitter extends ObjectPool<Turret> {
     }
 
     private boolean isPossibleToUpgrade(Turret t) {
-       if(t.getTurretType().upgradeTurret !=null) {
+       if(!t.getTurretTemplate().getUpgradedTurretName().equals("-")) {
            return true;
        }
         System.out.println("Максимальный апгрейд!");
         gameScreen.getInfoEmitter().setup(gameScreen.getSelectedCellX(), gameScreen.getSelectedCellY(), "Already upgraded!");
-           return false;
+        return false;
     }
+
+
 
 }

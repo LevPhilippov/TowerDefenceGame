@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
@@ -136,14 +135,14 @@ public class GameScreen implements Screen {
         btnSetTurret1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                turretEmitter.setTurret(selectedCellX, selectedCellY, TurretType.COMMON);
+                turretEmitter.setup(selectedCellX, selectedCellY, TurretType.COMMON);
             }
         });
 
         btnSetTurret2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                turretEmitter.setTurret(selectedCellX, selectedCellY, TurretType.FREEZE);
+                turretEmitter.setup(selectedCellX, selectedCellY, TurretType.FREEZE);
             }
         });
 

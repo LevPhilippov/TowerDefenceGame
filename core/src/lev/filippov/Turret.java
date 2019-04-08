@@ -23,8 +23,9 @@ public class Turret implements Poolable {
     private float chargeTime; //для проверки готовности к стрельбе
 
     //игровые характеристики
-    private TurretType turretType;
-    private BulletType bulletType;
+    private TurretTemplate turretTemplate;
+
+
     private float rotationSpeed;
     private float fireRadius;
     private float fireRate;
@@ -43,12 +44,11 @@ public class Turret implements Poolable {
         temp = new Vector2();
     }
 
-    public void init (int cellX, int cellY, TurretType type) {
+    public void init (int cellX, int cellY, TurretTemplate turretTemplate) {
         //текстуры и координаты
-        this.turretType = type;
-        this.bulletType = type.bulletType;
-        this.imageX = type.imageX;
-        this.imageY = type.imageY;
+        this.turretTemplate = turretTemplate;
+        this.imageX = turretTemplate.getImageX();
+        this.imageY = turretTemplate.getImageY();
         this.cellX = cellX;
         this.cellY = cellY;
         position.set(cellX*80+40, cellY*80+40);
@@ -59,16 +59,20 @@ public class Turret implements Poolable {
 
     private void initGameParam() {
         //параметры пушки
-        this.fireRadius = turretType.fireRadius;
-        this.rotationSpeed = turretType.rotationSpeed;
-        this.fireRate = turretType.fireRate;
+        this.fireRadius = turretTemplate.getFireRadius();
+        this.rotationSpeed = turretTemplate.getRotationSpeed();
+        this.fireRate = turretTemplate.getFireRate();
+        this.turretCost = turretTemplate.getCost();
         //параметры пули
         this.power = bulletType.power;
         this.bulletSpeed = bulletType.speed;
-        this.turretCost = turretType.cost;
         //вспомогательные
         charged = false;
         chargeTime = 0;
+    }
+
+    public TurretTemplate getTurretTemplate() {
+        return turretTemplate;
     }
 
     public int getTurretCost() {
@@ -172,11 +176,4 @@ public class Turret implements Poolable {
         return cellY;
     }
 
-    public TurretType getTurretType() {
-        return turretType;
-    }
-
-    public void upgrade() {
-        init(cellX,cellY, turretType.upgradeTurret);
-    }
 }

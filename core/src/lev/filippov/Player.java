@@ -1,7 +1,6 @@
 package lev.filippov;
 
 public class Player {
-
     private int hp;
     private int money;
     private int score;
