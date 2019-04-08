@@ -17,10 +17,11 @@ public class Bullet implements Poolable {
     private final float bulletRadius = 8;
     private float speed;
     private int power;
-    private int maxLifetime;
-    private int lifetime;
+    private float maxLifetime;
+    private float lifetime;
     private Monster target;
-    private BulletType bulletType;
+    private BulletTemplate bulletTemplate;
+    private boolean autoAim;
 
 
     public Bullet (GameScreen gameScreen) {
@@ -45,11 +46,12 @@ public class Bullet implements Poolable {
         return active;
     }
 
-    void init (float x, float y, float vx, float vy, BulletType bulletType, Monster target) {
-        this.bulletType = bulletType;
+    void init (float x, float y, float vx, float vy, BulletTemplate bulletTemplate, Monster target) {
+        this.bulletTemplate = bulletTemplate;
         this.target = target;
-        this.speed = bulletType.speed;
-        this.power = bulletType.power;
+        this.speed = bulletTemplate.getSpeed();
+        this.power = bulletTemplate.getPower();
+        this.autoAim = bulletTemplate.isAutoaim();
         position.set(x,y);
         velocity.set(vx,vy).nor().scl(speed);
         active = true;
@@ -63,22 +65,24 @@ public class Bullet implements Poolable {
     }
 
     public void update(float dt) {
-        maxLifetime +=dt;
+        lifetime +=dt;
         //если пуля самонаводящаяся
-
-        if(bulletType.autoaim) {
-            if(target.isActive())
-            velocity.set(target.getPosition()).sub(position).nor().scl(speed);
-            else
-                deactivate();
+        if(autoAim) {
+            if(target.isActive()) {
+                velocity.set(target.getPosition()).sub(position).nor().scl(speed);
+            }
+            else {
+                autoAim = false;
+            }
         }
 
         position.mulAdd(velocity, dt);
         hitBox.setPosition(position);
         gameScreen.getParticleEmitter().setup(position.x, position.y, MathUtils.random(-25, 25), MathUtils.random(-25, 25), 0.1f,1.2f,0.2f,1,0,0,1,1,1,0,1);
 
-        if (position.x < 0 || position.x>1280 || position.y<0 || position.y>720 || lifetime>=maxLifetime)
+        if (position.x < 0 || position.x>1280 || position.y<0 || position.y>720 || lifetime>maxLifetime) {
             deactivate();
+        }
     }
 
     public void deactivate(){

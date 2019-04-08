@@ -63,9 +63,9 @@ public class Turret implements Poolable {
         this.rotationSpeed = turretTemplate.getRotationSpeed();
         this.fireRate = turretTemplate.getFireRate();
         this.turretCost = turretTemplate.getCost();
-        //параметры пули
-        this.power = bulletType.power;
-        this.bulletSpeed = bulletType.speed;
+//        //параметры пули
+//        this.power = bulletType.power;
+//        this.bulletSpeed = bulletType.speed;
         //вспомогательные
         charged = false;
         chargeTime = 0;
@@ -158,7 +158,7 @@ public class Turret implements Poolable {
         if (Math.abs(getAngleToTarget()-angle)<4 && charged) {
             chargeTime = 0.0f;
             float rad = (float)Math.toRadians(angle+ MathUtils.random(-5,5)); //введен разброс
-            gameScreen.getBulletEmitter().setup(position.x, position.y, (float)Math.cos(rad), (float)Math.sin(rad), bulletType, target);
+            gameScreen.getBulletEmitter().setup(position.x, position.y, (float)Math.cos(rad), (float)Math.sin(rad), turretTemplate.getBulletName(), target);
             System.out.println("Fire!");
             charged = false;
         }

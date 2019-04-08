@@ -32,6 +32,7 @@ public class TurretEmitter extends ObjectPool<Turret> {
                     break;
                 if(str.equals("# turrets-up")) {
                     read = true;
+                    continue;
                 }
                 if(read) {
                     TurretTemplate template = new TurretTemplate(str);

@@ -135,14 +135,14 @@ public class GameScreen implements Screen {
         btnSetTurret1.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                turretEmitter.setup(selectedCellX, selectedCellY, TurretType.COMMON);
+                turretEmitter.setup(selectedCellX, selectedCellY, "COMMON");
             }
         });
 
         btnSetTurret2.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                turretEmitter.setup(selectedCellX, selectedCellY, TurretType.FREEZE);
+                turretEmitter.setup(selectedCellX, selectedCellY, "FREEZE");
             }
         });
 
