@@ -6,24 +6,23 @@ package lev.filippov;
 // Применять логику перемещения, как для монстров не имеет смысла, т.к. он в теории будет самоубиваться, либо ее нужно менять,
 // а этого делать не хочется. Честно говоря, задумка мне не очень нравится, т.к. я не понимаю в этом смысла.
 
-//В этой реализации стар16 вместо "короля". Каждые X секунд они менют положения на произвольное.
+//В этой реализации стар16 вместо "короля". Каждый раунд они менют положения на произвольное.
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Star16 {
     private GameScreen gameScreen;
     private Map map;
     private float maxRoundTime;
-
-    public float getTimer() {
-        return timer;
-    }
+    private int hp;
+    private int money;
+    private byte[][] data;
 
     private float reverseTimer;
     private float timer;
@@ -33,55 +32,96 @@ public class Star16 {
     private boolean finished;
 
     //позиции точек
-    private List<Vector2> positions;
+  //  private List<Vector2> positions;
+    private List<StarElement> elements;
 
     public Star16(GameScreen gameScreen) {
+        this.hp = 100;
         this.gameScreen = gameScreen;
         this.map = gameScreen.getMap();
-        this.maxRoundTime = 180f;
+        data = new byte[map.getMAP_WIDTH()][map.getMAP_HEIGHT()];
         this.timer = maxRoundTime;
         this.star16 = Assets.getInstance().getAtlas().findRegion("star16");
-        this.positions = new LinkedList<>();
+ //       this.positions = new LinkedList<>();
+        this.elements = new ArrayList<>();
         this.changePositionRate = 60;
         this.reverseTimer = maxRoundTime;
         this.timer = 0;
+        this.money = 300;
         init();
+    }
+
+    // элемент класса стар16 представляет собой одну из точек назначения, к которой строится маршрут.
+    // обладает собственным ХП, начальая позиция вычисляется согласно расположению элементов DESTINATION_POINT на карте
+    // при снижении ХП до 0 элемент исчезает, на карте также исчезает эелемент D_P.
+    // * при уничтожении монстры приносят меньше денег
+
+    public class StarElement {
+        private int hp;
+        private final int maxHP=100;
+        private Vector2 position;
+
+        public StarElement(Vector2 position) {
+            this.hp = maxHP;
+            this.position = position;
+        }
+
+        public int getHp() {
+            return hp;
+        }
+
+        public Vector2 getPosition() {
+            return position;
+        }
+
+        public void setPosition(Vector2 position) {
+            this.position = position;
+        }
+
+        public void addHP(int damage){
+            hp-=damage;
+        }
+
     }
 
     private void init() {
         for (int i = 0; i < map.getMAP_WIDTH(); i++) {
             for (int j = 0; j < map.getMAP_HEIGHT(); j++) {
                 if (map.getData()[i][j] == map.getELEMENT_DESTINATION()) {
-                    positions.add(new Vector2(i,j));
+                    elements.add(new StarElement(new Vector2(i,j)));
+     //               positions.add(new Vector2(i,j));
                 }
             }
         }
     }
 
     public void render(SpriteBatch batch) {
-        for (Vector2 position : positions) {
-            batch.draw(star16, position.x*80+24, position.y*80+24,0,0,16,16,3,3,0);
+        for (StarElement element : elements) {
+            batch.draw(star16, element.getPosition().x*80+24, element.getPosition().y*80+24,0,0,16,16,3,3,0);
         }
     }
 
     public void update (float dt) {
-        float angle;
-        for (Vector2 position : positions) {
+        updateParticles();
+        updateElementsState(dt);
+    }
+
+    private void updateParticles() {
+        for (StarElement element : elements) {
             for (int i = 0; i <6 ; i++) {
-                angle = i*60+MathUtils.random(-30,30);
-                gameScreen.getParticleEmitter().setup(position.x*80+40, position.y*80+40,
+                float angle = i*60+ MathUtils.random(-30,30);
+                gameScreen.getParticleEmitter().setup(element.getPosition().x*80+40, element.getPosition().y*80+40,
             30* MathUtils.cosDeg(angle), 30*MathUtils.sinDeg(angle), 2,1f, 0.2f,
             1,1,1,1,1,1,1,0);
             }
         }
-        updateState(dt);
     }
 
-    public void updateState(float dt) {
-        if(reverseTimer<=0 && !finished){
-            finished = true;
-            finishRound();
-        }
+    public void updateElementsState(float dt) {
+//        if(reverseTimer<=0 && !finished){
+//            finished = true;
+//            finishRound();
+//        }
 
         reverseTimer-=dt;
         timer=(int)reverseTimer;
@@ -93,20 +133,19 @@ public class Star16 {
         }
     }
 
-    private void changeStarPosition() {
+    public void changeStarPosition() {
         int tempX;
         int tempY;
-        for (Vector2 position : positions) {
+        for (StarElement element : elements) {
             do {
-                tempX = MathUtils.random(0,map.getMAP_WIDTH()-2);
+                tempX = MathUtils.random(0,map.getMAP_WIDTH()-1);
                 tempY = MathUtils.random(0, map.getMAP_HEIGHT()-1);
-
             } while (!map.isEmpty(tempX,tempY) && !isMonstersInCell(tempX,tempY));
-
-            map.deployElementInMap((int)position.x, (int)position.y,map.getELEMENT_GRASS());
-            position.x = tempX;
-            position.y = tempY;
-            map.deployElementInMap((int)position.x, (int)position.y,map.getELEMENT_DESTINATION());
+            // переделать
+            map.deployElementInMap((int)element.getPosition().x, (int)element.getPosition().y, map.getELEMENT_GRASS());
+            element.getPosition().x = tempX;
+            element.getPosition().y = tempY;
+            map.deployElementInMap((int)element.getPosition().x, (int)element.getPosition().y, map.getELEMENT_DESTINATION());
         }
     }
 
@@ -119,7 +158,36 @@ public class Star16 {
         return false;
     }
 
-    public void finishRound() {
-        gameScreen.getPlayer().roundCompleted();
+////    public void finishRound() {
+//        gameScreen.getPlayer().roundCompleted();
+//    }
+
+    public void addHP(StarElement element, int damage) {
+        element.addHP(-damage);
+        if (element.hp<=0) {
+            hp = 0;
+            elements.remove(element);
+            map.deployElementInMap((int)element.getPosition().x, (int)element.getPosition().y, map.getELEMENT_GRASS());
+            //инициация поражения
+        }
+    }
+
+    public void addMoney(int amount) {
+        money+=amount;
+    }
+
+    public boolean isMoneyEnough(int amount) {
+        if(money>=amount)
+            return true;
+        gameScreen.getInfoEmitter().setup(gameScreen.getSelectedCellX(),gameScreen.getSelectedCellY(), "Not enough money!");
+        return false;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public List<StarElement> getElements() {
+        return elements;
     }
 }

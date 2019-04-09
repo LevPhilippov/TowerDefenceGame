@@ -28,7 +28,6 @@ public class ScreenManager {
     private Screen targetScreen;
     private Viewport viewport;
     private Camera camera;
-    private Player player;
 
     private static ScreenManager ourInstance = new ScreenManager();
 
@@ -51,11 +50,6 @@ public class ScreenManager {
         this.menuScreen = new MenuScreen(batch, camera);
         this.gameScreen = new GameScreen(batch, camera);
         this.loadingScreen = new LoadingScreen(batch);
-        this.player = new Player(gameScreen);
-    }
-
-    public Player getPlayer() {
-        return player;
     }
 
     // метод вызвается при изменении размера окна

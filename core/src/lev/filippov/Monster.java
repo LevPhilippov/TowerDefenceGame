@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 
+import javax.xml.stream.events.StartElement;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -29,6 +30,7 @@ public class Monster implements Poolable {
     private Vector2 tempVector;
     private Vector2 nextPosition;
     private Vector2 dst;
+    private Star16.StarElement targetElement;
 
     private static int[] North = new int[]{0,1};
     private static int[] South = new int[]{0,-1};
@@ -130,7 +132,7 @@ public class Monster implements Poolable {
 
         if(path.isEmpty()){
             deactivate();
-            gameScreen.getPlayer().receiveDamage(damage);
+            gameScreen.getStar16().addHP(targetElement, -damage);
             clearMonsterWay();
         }
     }
@@ -176,8 +178,7 @@ public class Monster implements Poolable {
         hp -= damage*scale;
         if(hp<=0) {
             //добавляем золота и очков игроку
-            gameScreen.getPlayer().addMoney(costForDestroying);
-            gameScreen.getPlayer().addScore(scoreForDestroying);
+            gameScreen.getStar16().addMoney(costForDestroying);
             deactivate();
         }
     }
@@ -222,6 +223,12 @@ public class Monster implements Poolable {
                             makeNewWave(waveCounter + 1, tempX, tempY);
                             if (destPointReached){
                                 destPointReached=false;
+                                for (Star16.StarElement element : gameScreen.getStar16().getElements()) {
+                                    if (element.getPosition().x == tempX && element.getPosition().y == tempY) {
+                                        targetElement = element;
+                                        break;
+                                    }
+                                }
                                 defineRoute(tempX, tempY, waveCounter);
                                 return;
                             }

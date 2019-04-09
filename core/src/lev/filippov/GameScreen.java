@@ -5,15 +5,8 @@ import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 public class GameScreen implements Screen {
 
@@ -29,7 +22,6 @@ public class GameScreen implements Screen {
     private int selectedCellX, selectedCellY;
     private BitmapFont scoreFont;
     private Stage stage;
-    private Player player;
     private float respTime;
     private Star16 star16;
     private MonsterWaveController monsterWaveController;
@@ -37,12 +29,6 @@ public class GameScreen implements Screen {
     private BitmapFont winFont;
 
     private boolean levelCompleted;
-
-
-//    //GUI
-//    private Group groupTurretAction;
-//    private Group groupTurretSelection;
-//    private Group winScrenGroup;
 
     public GameScreen(SpriteBatch batch, Camera camera) {
         this.batch = batch;
@@ -53,8 +39,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        this.player = ScreenManager.getInstance().getPlayer();
-        this.map = new Map("level_"+ player.getRoundProgress()+ ".map");
+        this.map = new Map("level_1.map");
         this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
         this.turretEmitter = new TurretEmitter(this);
@@ -68,11 +53,12 @@ public class GameScreen implements Screen {
     }
 
     //getters & setters
+
+    public Star16 getStar16() {
+        return star16;
+    }
     public TurretEmitter getTurretEmitter() {
         return turretEmitter;
-    }
-    public void setLevelCompleted(boolean levelCompleted) {
-        this.levelCompleted = levelCompleted;
     }
     public SpriteBatch getBatch() {
         return batch;
@@ -104,9 +90,6 @@ public class GameScreen implements Screen {
     public BulletEmitter getBulletEmitter() {
         return bulletEmitter;
     }
-    public Player getPlayer() {
-        return player;
-    }
     public InfoEmitter getInfoEmitter() {
         return infoEmitter;
     }
@@ -131,9 +114,7 @@ public class GameScreen implements Screen {
         particleEmitter.render(batch);
         infoEmitter.render(batch, scoreFont);
         //отрисовка скора
-        scoreFont.draw(batch, "Score:" + player.getScore(), 20, 700);
-        scoreFont.draw(batch, "Gold:" + player.getMoney(), 20, 650);
-        scoreFont.draw(batch, "HP:" + player.getHp(), 20, 600);
+        scoreFont.draw(batch, "Gold:" + star16.getMoney(), 20, 650);
         scoreFont.draw(batch, "Time remains: " + (int)monsterWaveController.getWaveReverseTimer(),120, 700 );
         scoreFont.draw(batch, "Next wave in: " + (int)monsterWaveController.getPauseReverseTimer(),120, 650 );
         scoreFont.draw(batch, "Current wave: " + (int)monsterWaveController.getCurrentWave(),120, 600 );

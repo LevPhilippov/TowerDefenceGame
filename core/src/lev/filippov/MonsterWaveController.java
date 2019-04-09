@@ -85,7 +85,6 @@ public class MonsterWaveController {
         if(waveReverseTimer<=0) {
             waveIsActive = false;
             if (waveTemplatesList.isEmpty()) {
-                gameScreen.setLevelCompleted(true);
                 System.out.println("Успех!");
                 //уровень закончился, монстры взрываются, король всех убивает и т.д., затем идет переход на другой уровень.
                 return;

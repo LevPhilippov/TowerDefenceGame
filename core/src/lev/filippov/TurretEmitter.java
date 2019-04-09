@@ -63,12 +63,12 @@ public class TurretEmitter extends ObjectPool<Turret> {
 
     public void setup (int cellX, int cellY, String turretTemplateName) {
         TurretTemplate template = turretTemplates.get(turretTemplateName);
-        if (gameScreen.getPlayer().isMoneyEnough(template.getCost()) && canIDeployItHere(cellX,cellY)) {
+        if (gameScreen.getStar16().isMoneyEnough(template.getCost()) && canIDeployItHere(cellX,cellY)) {
             Turret turret = getActiveElement();
             turret.init(cellX, cellY, template);
             gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_TURRET());
-            gameScreen.getPlayer().addMoney(-50);
-            gameScreen.getInfoEmitter().setup(cellX,cellY,"-50");
+            gameScreen.getStar16().addMoney(-template.getCost());
+            gameScreen.getInfoEmitter().setup(cellX,cellY,"-" + template.getCost());
         }
     }
 
@@ -111,7 +111,7 @@ public class TurretEmitter extends ObjectPool<Turret> {
     public boolean destroyTurret(int cellX, int cellY) {
         Turret t = findTurret(cellX, cellY);
         if(isTurretExist(t)) {
-            gameScreen.getPlayer().addMoney(t.getTurretCost()/2);
+            gameScreen.getStar16().addMoney(t.getTurretCost()/2);
             t.deactivate();
             gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_GRASS());
             return true;
@@ -122,9 +122,10 @@ public class TurretEmitter extends ObjectPool<Turret> {
     public boolean upgradeTurret(int cellX, int cellY) {
         Turret t = findTurret(cellX, cellY);
         if (isTurretExist(t) && isPossibleToUpgrade(t)) {
-            if(gameScreen.getPlayer().isMoneyEnough(t.getTurretCost())) {
-                t.init(cellX, cellY, turretTemplates.get(t.getTurretTemplate().getUpgradedTurretName()));
-                gameScreen.getPlayer().spendMoney(t.getTurretCost());
+            TurretTemplate upgradedTurretTemplate = turretTemplates.get(t.getTurretTemplate().getUpgradedTurretName());
+            if(gameScreen.getStar16().isMoneyEnough(upgradedTurretTemplate.getCost())) {
+                t.init(cellX, cellY, upgradedTurretTemplate);
+                gameScreen.getStar16().addMoney(-upgradedTurretTemplate.getCost());
             }
         }
             return false;
