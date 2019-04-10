@@ -72,6 +72,14 @@ public class RoundLoader {
                 gameScreen.getMonsterWaveController().getWaveTemplatesList().addLast(template);
             }
 
+            while (!(str = reader.readLine()).equals("# monsterRespCells-up"));
+
+            str = reader.readLine();
+
+            for (WaveTemplate waveTemplate : gameScreen.getMonsterWaveController().getWaveTemplatesList()) {
+                waveTemplate.addMonsterRespawnCells(str);
+            }
+
             reader.close();
 
         } catch (IOException e) {

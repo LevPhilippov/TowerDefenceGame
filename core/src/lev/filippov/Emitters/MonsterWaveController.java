@@ -27,6 +27,7 @@ public class MonsterWaveController {
     private boolean waveIsActive;
     private MonsterEmitter monsterEmitter;
 
+
     public MonsterWaveController(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         this.monsterEmitter = new MonsterEmitter(gameScreen);
@@ -100,7 +101,7 @@ public class MonsterWaveController {
         if(waveIsActive){
             waveReverseTimer -= dt;
             if(monsterRespawnTimer > currentTemplate.getRate()) {
-                monsterEmitter.setup(MathUtils.random(7,10), MathUtils.random(3,5), currentTemplate.getMonsterHP());
+                monsterEmitter.setup(MathUtils.random(currentTemplate.getCellXBegin(),currentTemplate.getCellXEnd()), MathUtils.random(currentTemplate.getCellYBegin(),currentTemplate.getCellYEnd()), currentTemplate.getMonsterHP());
                 monsterRespawnTimer = 0;
             }
         }

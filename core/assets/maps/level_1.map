@@ -29,9 +29,10 @@
     4,          120,            10,         20
     5,          150,            10,         40
 # waves-down
-//не реализованный функционал
-# number of wave, coordX, coordY
-# coordinates-up
-    1,              8,      4, 7,4, 9,4
-# coordinates-down
+
+range of cells for monters initiations;
+# coordXBegin, coordXEnd, coordYBegin, coordYEnd
+# monsterRespCells-up
+7, 10, 3, 5
+# monsterRespPoints-down
 

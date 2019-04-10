@@ -14,6 +14,12 @@ public class WaveTemplate {
     private int monsterHP;
     private float rate;
     private int duration;
+    //диапазон для респауна монстров
+    private int cellXBegin;
+    private int cellXEnd;
+    private int cellYBegin;
+    private int cellYEnd;
+
 
     public WaveTemplate(String strTemplate1) {
         String[] tokens = strTemplate1.split(",");
@@ -37,5 +43,29 @@ public class WaveTemplate {
 
     public int getDuration() {
         return duration;
+    }
+
+    public void addMonsterRespawnCells(String str){
+        String[] tokens = str.split(",");
+        this.cellXBegin = Integer.parseInt(tokens[0].trim());
+        this.cellXEnd = Integer.parseInt(tokens[1].trim());
+        this.cellYBegin = Integer.parseInt(tokens[2].trim());
+        this.cellYEnd = Integer.parseInt(tokens[3].trim());
+    }
+
+    public int getCellXBegin() {
+        return cellXBegin;
+    }
+
+    public int getCellXEnd() {
+        return cellXEnd;
+    }
+
+    public int getCellYBegin() {
+        return cellYBegin;
+    }
+
+    public int getCellYEnd() {
+        return cellYEnd;
     }
 }
