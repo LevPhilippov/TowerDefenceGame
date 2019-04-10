@@ -33,7 +33,7 @@ public class MonsterWaveController {
         this.waveTemplates = new HashMap<Integer, WaveTemplate>();
         this.waveTemplatesList = new LinkedList<WaveTemplate>();
         this.mapName = gameScreen.getMap().getFileName();
-        loadTemplates();
+    //    loadTemplates();
         this.pauseBetweenWaves = 10f;
     }
 
@@ -124,5 +124,9 @@ public class MonsterWaveController {
 
     public int getCurrentWave() {
         return currentWave;
+    }
+
+    public LinkedList<WaveTemplate> getWaveTemplatesList() {
+        return waveTemplatesList;
     }
 }

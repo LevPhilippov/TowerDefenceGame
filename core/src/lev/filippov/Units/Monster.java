@@ -117,7 +117,7 @@ public class Monster implements Poolable {
 
     public void update(float dt) {
 
-        if(mapVersion != map.getVersion()) {
+        if(mapVersion != map.getVersion() || !targetElement.isActive()) {
             clearMonsterWay();
             buildRoute();
             mapVersion = map.getVersion();
@@ -264,7 +264,7 @@ public class Monster implements Poolable {
                 routeMatrix[tempX][tempY] = waveCounter+1;
                 stack1.push(coordMatrix[tempX][tempY]);
             }
-            if (map.isDestination(tempX, tempY)) {
+            if (gameScreen.getStar16().isStar16(tempX, tempY)) {
                 destPointReached = true;
                 routeMatrix[tempX][tempY] = -1;
             }

@@ -24,7 +24,7 @@ public class TurretEmitter extends ObjectPool<Turret> {
         this.allTextures = Assets.getInstance().getAtlas().findRegion("turrets").split(80,80);
         this.turretTemplates = new HashMap<String, TurretTemplate>();
         this.turretsMap = new byte[gameScreen.getMap().getMAP_WIDTH()][gameScreen.getMap().getMAP_HEIGHT()];
-        loadTemplates();
+       // loadTemplates();
     }
 
     private void loadTemplates() {
@@ -64,6 +64,7 @@ public class TurretEmitter extends ObjectPool<Turret> {
             turretsMap[cellX][cellY] = 1; // добавляем в карту турелей
             gameScreen.getStar16().addMoney(-template.getCost());
             gameScreen.getInfoEmitter().setup(cellX,cellY,"-" + template.getCost());
+            gameScreen.getMap().updateMapVersion();
         }
     }
 
@@ -114,6 +115,7 @@ public class TurretEmitter extends ObjectPool<Turret> {
         t.deactivate();
         //убираем с карты турелей
         turretsMap[cellX][cellY] = 0;
+        gameScreen.getMap().updateMapVersion();
         return true;
 }
 
@@ -168,5 +170,7 @@ public class TurretEmitter extends ObjectPool<Turret> {
         return turretsMap[cellX][cellY] == 1;
     }
 
-
+    public HashMap<String, TurretTemplate> getTurretTemplates() {
+        return turretTemplates;
+    }
 }

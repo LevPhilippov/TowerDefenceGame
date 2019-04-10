@@ -53,11 +53,15 @@ public class GameScreen implements Screen {
         this.star16 = new Star16(this);
         this.winFont = Assets.getInstance().getAssetManager().get("fonts/zorque36.ttf");
         this.monsterWaveController = new MonsterWaveController(this);
+        RoundLoader.loadRound(this, "level_1.map");
         GUICreator.createGUI(this);
     }
 
     //getters & setters
 
+    public MonsterWaveController getMonsterWaveController() {
+        return monsterWaveController;
+    }
     public Star16 getStar16() {
         return star16;
     }

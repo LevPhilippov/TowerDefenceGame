@@ -37,7 +37,8 @@ public class Map {
         data = new byte[MAP_WIDTH][MAP_HEIGHT];
         textureRegionGrass = Assets.getInstance().getAtlas().findRegion("grass");
         textureRegionRoad = Assets.getInstance().getAtlas().findRegion("road");
-        loadMapFromFile(mapName);
+        this.data = new byte[MAP_WIDTH][MAP_HEIGHT];
+//        loadMapFromFile(mapName);
     }
 
     public int getELEMENT_WALL() {
@@ -93,9 +94,6 @@ public class Map {
                 if (data[i][j] == ELEMENT_TURRET) {
                     batch.draw(textureRegionGrass, i * 80, j * 80);
                 }
-                if (data[i][j] == ELEMENT_DESTINATION) {
-                    batch.draw(textureRegionGrass, i*80, j*80);
-                }
             }
         }
     }
@@ -109,33 +107,29 @@ public class Map {
         updateMapVersion();
     }
 
-    public void loadMapFromFile(String mapName) {
-        this.data = new byte[MAP_WIDTH][MAP_HEIGHT];
-        BufferedReader reader = null;
-        String str;
-        try {
-            reader = Gdx.files.internal("maps/" + mapName).reader(8192);
-            while ((str = reader.readLine()).equals("# map-up"))
-            for (int i = 0; i < 9; i++) {
-                str = reader.readLine();
-                for (int j = 0; j < 16; j++) {
-                    char symb = str.charAt(j);
-                    if (symb == '1') {
-                        data[j][8 - i] = ELEMENT_ROAD;
-                    }
-                    if (symb=='2'){
-                        data[j][8-i] = ELEMENT_WALL;
-                    }
-                    if (symb =='5') {
-                        data[j][8-i] = ELEMENT_DESTINATION;
-                    }
-                }
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void loadMapFromFile(String mapName) {
+//        BufferedReader reader = null;
+//        String str;
+//        try {
+//            reader = Gdx.files.internal("maps/" + mapName).reader(8192);
+//            while ((str = reader.readLine()).equals("# map-up"))
+//            for (int i = 0; i < 9; i++) {
+//                str = reader.readLine();
+//                for (int j = 0; j < 16; j++) {
+//                    char symb = str.charAt(j);
+//                    if (symb == '1') {
+//                        data[j][8 - i] = ELEMENT_ROAD;
+//                    }
+//                    if (symb=='2'){
+//                        data[j][8-i] = ELEMENT_WALL;
+//                    }
+//                }
+//            }
+//            reader.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public boolean isEmpty(int x, int y){
         return data[x][y] == ELEMENT_GRASS || data[x][y] == ELEMENT_ROAD;
@@ -145,10 +139,4 @@ public class Map {
     public boolean isExist(int x, int y) {
         return (x >=0 && x<MAP_WIDTH && y>=0 && y<MAP_HEIGHT);
     }
-
-
-    public boolean isDestination(int x, int y) {
-        return data[x][y]==ELEMENT_DESTINATION;
-    }
-
 }

@@ -63,10 +63,12 @@ public class Star16 {
         private int hp;
         private final int maxHP=100;
         private Vector2 position;
+        private boolean active;
 
         public StarElement(Vector2 position) {
             this.hp = maxHP;
             this.position = position;
+            this.active = true;
         }
 
         public int getHp() {
@@ -85,6 +87,9 @@ public class Star16 {
             hp-=damage;
         }
 
+        public boolean isActive() {
+            return active;
+        }
     }
 
     private void init() {
@@ -92,7 +97,6 @@ public class Star16 {
             for (int j = 0; j < map.getMAP_HEIGHT(); j++) {
                 if (map.getData()[i][j] == map.getELEMENT_DESTINATION()) {
                     elements.add(new StarElement(new Vector2(i,j)));
-     //               positions.add(new Vector2(i,j));
                 }
             }
         }
@@ -144,11 +148,8 @@ public class Star16 {
                 tempX = MathUtils.random(0,map.getMAP_WIDTH()-1);
                 tempY = MathUtils.random(0, map.getMAP_HEIGHT()-1);
             } while (!map.isEmpty(tempX,tempY) && !isMonstersInCell(tempX,tempY));
-            // переделать
-            map.deployElementInMap((int)element.getPosition().x, (int)element.getPosition().y, map.getELEMENT_GRASS());
             element.getPosition().x = tempX;
             element.getPosition().y = tempY;
-            map.deployElementInMap((int)element.getPosition().x, (int)element.getPosition().y, map.getELEMENT_DESTINATION());
         }
     }
 
@@ -169,8 +170,8 @@ public class Star16 {
         element.addHP(-damage);
         if (element.hp<=0) {
             hp = 0;
+            element.active = false;
             elements.remove(element);
-            map.deployElementInMap((int)element.getPosition().x, (int)element.getPosition().y, map.getELEMENT_GRASS());
             //инициация поражения
         }
     }
@@ -193,4 +194,15 @@ public class Star16 {
     public List<StarElement> getElements() {
         return elements;
     }
+
+    public boolean isStar16(int cellX, int cellY) {
+        for (StarElement element : elements) {
+            if(element.position.x == cellX && element.position.y == cellY) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }
