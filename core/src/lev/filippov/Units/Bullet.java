@@ -1,10 +1,14 @@
-package lev.filippov;
+package lev.filippov.Units;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import lev.filippov.Assets;
+import lev.filippov.Screens.GameScreen;
+import lev.filippov.Emitters.Poolable;
+import lev.filippov.Templates.BulletTemplate;
 
 public class Bullet implements Poolable {
 
@@ -33,6 +37,10 @@ public class Bullet implements Poolable {
         maxLifetime = 3;
     }
 
+    public Vector2 getPosition() {
+        return position;
+    }
+
     public Circle getHitBox() {
         return hitBox;
     }
@@ -46,7 +54,7 @@ public class Bullet implements Poolable {
         return active;
     }
 
-    void init (float x, float y, float vx, float vy, BulletTemplate bulletTemplate, Monster target) {
+    public void init (float x, float y, float vx, float vy, BulletTemplate bulletTemplate, Monster target) {
         this.bulletTemplate = bulletTemplate;
         this.target = target;
         this.speed = bulletTemplate.getSpeed();

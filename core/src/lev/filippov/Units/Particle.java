@@ -1,6 +1,7 @@
-package lev.filippov;
+package lev.filippov.Units;
 
 import com.badlogic.gdx.math.Vector2;
+import lev.filippov.Emitters.Poolable;
 
 public class Particle implements Poolable {
     private Vector2 position;

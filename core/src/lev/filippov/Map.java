@@ -40,6 +40,14 @@ public class Map {
         loadMapFromFile(mapName);
     }
 
+    public int getELEMENT_WALL() {
+        return ELEMENT_WALL;
+    }
+
+    public int getELEMENT_ROAD() {
+        return ELEMENT_ROAD;
+    }
+
     public String getFileName() {
         return fileName;
     }

@@ -1,4 +1,4 @@
-package lev.filippov;
+package lev.filippov.Templates;
 
 //    # name, imageX, imageY, fireRadius, rotationSpeed(deg), fireRate(time btw shots), cost, upgradedTurretName, bulletName
 public class TurretTemplate {

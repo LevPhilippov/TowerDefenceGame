@@ -1,8 +1,10 @@
-package lev.filippov;
+package lev.filippov.Emitters;
 
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import lev.filippov.Assets;
+import lev.filippov.Units.Particle;
 
 /**
  * Created by FlameXander on 02.07.2017.

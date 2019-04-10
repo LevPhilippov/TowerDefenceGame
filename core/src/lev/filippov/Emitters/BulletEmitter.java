@@ -1,7 +1,11 @@
-package lev.filippov;
+package lev.filippov.Emitters;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import lev.filippov.Screens.GameScreen;
+import lev.filippov.Templates.BulletTemplate;
+import lev.filippov.Units.Bullet;
+import lev.filippov.Units.Monster;
 
 import java.io.BufferedReader;
 import java.io.IOException;

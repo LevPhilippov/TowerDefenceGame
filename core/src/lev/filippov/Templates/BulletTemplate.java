@@ -1,4 +1,4 @@
-package lev.filippov;
+package lev.filippov.Templates;
 
 public class BulletTemplate {
     // # name, power, speed, autoaim

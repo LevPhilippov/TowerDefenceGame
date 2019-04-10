@@ -1,4 +1,4 @@
-package lev.filippov;
+package lev.filippov.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -12,6 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import lev.filippov.Assets;
+import lev.filippov.ScreenManager;
+import lev.filippov.Screens.GameScreen;
 //import oracle.jrockit.jfr.ActiveSettingEvent;
 
 public class GUICreator {
@@ -54,6 +57,7 @@ public class GUICreator {
             groupTurretAction.addActor(btnSetTurret);
             groupTurretAction.addActor(btnUpgradeTurret);
             groupTurretAction.addActor(btnDestroyTurret);
+            groupTurretAction.setColor(1,1,1,0.5f);
 
             //кнопки группы "установка" (дочерняя)
             Group groupTurretSelection = new Group();
@@ -64,6 +68,7 @@ public class GUICreator {
             btnSetTurret2.setPosition(80, 80);
             groupTurretSelection.addActor(btnSetTurret1);
             groupTurretSelection.addActor(btnSetTurret2);
+            groupTurretSelection.setColor(1,1,1,0.5f);
 
             btnSetTurret1.addListener(new ChangeListener() {
                 @Override

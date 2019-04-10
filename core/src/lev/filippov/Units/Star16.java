@@ -1,4 +1,4 @@
-package lev.filippov;
+package lev.filippov.Units;
 
 //финишная точка для монстров
 //Например, каждую минуту оно произвольно перемещатся по карте.
@@ -12,6 +12,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import lev.filippov.Assets;
+import lev.filippov.Screens.GameScreen;
+import lev.filippov.Map;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,8 +1,10 @@
-package lev.filippov;
+package lev.filippov.Emitters;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import lev.filippov.Screens.GameScreen;
+import lev.filippov.Units.Monster;
 
-public class MonsterEmitter extends ObjectPool <Monster> {
+public class MonsterEmitter extends ObjectPool<Monster> {
     private GameScreen gameScreen;
 
     public MonsterEmitter(GameScreen gameScreen) {

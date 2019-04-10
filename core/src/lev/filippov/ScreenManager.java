@@ -10,6 +10,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import lev.filippov.Screens.GameScreen;
+import lev.filippov.Screens.LoadingScreen;
+import lev.filippov.Screens.MenuScreen;
 
 public class ScreenManager {
     public enum ScreenType {

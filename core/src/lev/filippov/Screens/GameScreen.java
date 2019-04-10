@@ -1,4 +1,4 @@
-package lev.filippov;
+package lev.filippov.Screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import lev.filippov.*;
+import lev.filippov.Emitters.*;
+import lev.filippov.Units.Star16;
 
 public class GameScreen implements Screen {
 
@@ -139,6 +142,7 @@ public class GameScreen implements Screen {
         infoEmitter.update(dt);
 
         CheckCollisonServise.checkCollision(this);
+        CheckCollisonServise.checkBulletCollisionsWithWalls(this);
 
         stage.act(dt);
 

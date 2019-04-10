@@ -1,9 +1,11 @@
-package lev.filippov;
+package lev.filippov.Emitters;
 
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import lev.filippov.Screens.GameScreen;
+import lev.filippov.Templates.WaveTemplate;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,6 +1,6 @@
 //package lev.filippov.junk;
 //
-//import lev.filippov.GameScreen;
+//import lev.filippov.Screens.GameScreen;
 //
 //public class Player {
 //    private int hp;

@@ -1,4 +1,4 @@
-package lev.filippov;
+package lev.filippov.Templates;
 //# map-down
 //# numberOfWawes
 //5

@@ -1,4 +1,4 @@
-package lev.filippov;
+package lev.filippov.Screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
@@ -11,6 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import lev.filippov.Assets;
+import lev.filippov.ScreenManager;
 
 public class MenuScreen implements Screen{
 
