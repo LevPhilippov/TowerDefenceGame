@@ -260,7 +260,7 @@ public class Monster implements Poolable {
 
     private void markNewPoint(int tempX, int tempY) {
         if(map.isExist(tempX, tempY)) {
-            if (map.isEmpty(tempX, tempY) && cellNotInRoute(tempX, tempY)) {
+            if (map.isEmpty(tempX, tempY) && cellNotInRoute(tempX, tempY) && !gameScreen.getTurretEmitter().isTurretInCell(tempX,tempY)) {
                 routeMatrix[tempX][tempY] = waveCounter+1;
                 stack1.push(coordMatrix[tempX][tempY]);
             }

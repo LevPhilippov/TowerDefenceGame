@@ -17,11 +17,13 @@ public class TurretEmitter extends ObjectPool<Turret> {
     private GameScreen gameScreen;
     private TextureRegion[][] allTextures;
     private HashMap<String, TurretTemplate> turretTemplates;
+    private byte[][] turretsMap;
 
     public TurretEmitter(GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         this.allTextures = Assets.getInstance().getAtlas().findRegion("turrets").split(80,80);
         this.turretTemplates = new HashMap<String, TurretTemplate>();
+        this.turretsMap = new byte[gameScreen.getMap().getMAP_WIDTH()][gameScreen.getMap().getMAP_HEIGHT()];
         loadTemplates();
     }
 
@@ -54,23 +56,12 @@ public class TurretEmitter extends ObjectPool<Turret> {
         return new Turret(gameScreen, allTextures);
     }
 
-//    public boolean setup(int cellX, int cellY, String turretTemplateName) {
-//        if (!canIDeployItHere(cellX, cellY)) {
-//            return false;
-//        }
-//
-//        Turret turret = getActiveElement();
-//        turret.init(cellX, cellY, turretTemplates.get(turretTemplateName));
-//        gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_TURRET());
-//        return true;
-//    }
-
     public void setup (int cellX, int cellY, String turretTemplateName) {
         TurretTemplate template = turretTemplates.get(turretTemplateName);
         if (gameScreen.getStar16().isMoneyEnough(template.getCost()) && canIDeployItHere(cellX,cellY)) {
             Turret turret = getActiveElement();
             turret.init(cellX, cellY, template);
-            gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_TURRET());
+            turretsMap[cellX][cellY] = 1; // добавляем в карту турелей
             gameScreen.getStar16().addMoney(-template.getCost());
             gameScreen.getInfoEmitter().setup(cellX,cellY,"-" + template.getCost());
         }
@@ -90,8 +81,8 @@ public class TurretEmitter extends ObjectPool<Turret> {
 
     public boolean canIDeployItHere(int cellX, int cellY) {
         //проверка условия: пуста ли клетка?
-        if (!gameScreen.getMap().isEmpty(cellX, cellY)) {
-            gameScreen.getInfoEmitter().setup(cellX,cellY,"Cell isn't empty!");
+        if (gameScreen.getMap().getData()[cellX][cellY] != gameScreen.getMap().getELEMENT_GRASS()) {
+            gameScreen.getInfoEmitter().setup(cellX,cellY,"You can't build on a road!");
             return false;
         }
         //проверка условия: усли мобы в клетке?
@@ -113,26 +104,37 @@ public class TurretEmitter extends ObjectPool<Turret> {
     }
 
     public boolean destroyTurret(int cellX, int cellY) {
-        Turret t = findTurret(cellX, cellY);
-        if(isTurretExist(t)) {
-            gameScreen.getStar16().addMoney(t.getTurretCost()/2);
-            t.deactivate();
-            gameScreen.getMap().deployElementInMap(cellX,cellY,gameScreen.getMap().getELEMENT_GRASS());
-            return true;
+        if(!isTurretExist(cellX,cellY)) {
+            return false;
         }
-        return false;
-    }
+
+        Turret t = findTurret(cellX, cellY);
+
+        gameScreen.getStar16().addMoney(t.getTurretCost()/2);
+        t.deactivate();
+        //убираем с карты турелей
+        turretsMap[cellX][cellY] = 0;
+        return true;
+}
 
     public boolean upgradeTurret(int cellX, int cellY) {
-        Turret t = findTurret(cellX, cellY);
-        if (isTurretExist(t) && isPossibleToUpgrade(t)) {
-            TurretTemplate upgradedTurretTemplate = turretTemplates.get(t.getTurretTemplate().getUpgradedTurretName());
-            if(gameScreen.getStar16().isMoneyEnough(upgradedTurretTemplate.getCost())) {
-                t.init(cellX, cellY, upgradedTurretTemplate);
-                gameScreen.getStar16().addMoney(-upgradedTurretTemplate.getCost());
-            }
-        }
+        if(!isTurretExist(cellX,cellY)) {
             return false;
+        }
+        Turret t = findTurret(cellX, cellY);
+
+        if(!isPossibleToUpgrade(t)){
+            return false;
+        }
+        TurretTemplate upgradedTurretTemplate = turretTemplates.get(t.getTurretTemplate().getUpgradedTurretName());
+
+        if(!gameScreen.getStar16().isMoneyEnough(upgradedTurretTemplate.getCost())) {
+            return false;
+        }
+
+        t.init(cellX, cellY, upgradedTurretTemplate);
+        gameScreen.getStar16().addMoney(-upgradedTurretTemplate.getCost());
+        return true;
     }
 
     private Turret findTurret (int cellX, int cellY) {
@@ -144,10 +146,11 @@ public class TurretEmitter extends ObjectPool<Turret> {
         return null;
     }
 
-    private boolean isTurretExist(Turret t) {
-        if(t != null) {
+    private boolean isTurretExist(int cellX, int cellY) {
+        if(turretsMap[cellX][cellY]==1) {
             return true;
         }
+
         gameScreen.getInfoEmitter().setup(gameScreen.getSelectedCellX(), gameScreen.getSelectedCellY(), "Turret is not exist!");
         return false;
     }
@@ -161,6 +164,9 @@ public class TurretEmitter extends ObjectPool<Turret> {
         return false;
     }
 
+    public boolean isTurretInCell(int cellX, int cellY) {
+        return turretsMap[cellX][cellY] == 1;
+    }
 
 
 }

@@ -151,10 +151,4 @@ public class Map {
         return data[x][y]==ELEMENT_DESTINATION;
     }
 
-
-    public void deployElementInMap(int cellX, int cellY, int ELEMENT) {
-        data[cellX][cellY] = (byte)ELEMENT;
-        updateMapVersion();
-    }
-
 }
