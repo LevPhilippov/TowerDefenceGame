@@ -100,7 +100,8 @@ public class MonsterWaveController {
         // респ монстров
         if(waveIsActive){
             waveReverseTimer -= dt;
-            if(monsterRespawnTimer > currentTemplate.getRate()) {
+            //монтры не респаунятся, если зафиксировано поражение
+            if(monsterRespawnTimer > currentTemplate.getRate() && !gameScreen.getStar16().isDefeatFlag()) {
                 monsterEmitter.setup(MathUtils.random(currentTemplate.getCellXBegin(),currentTemplate.getCellXEnd()), MathUtils.random(currentTemplate.getCellYBegin(),currentTemplate.getCellYEnd()), currentTemplate.getMonsterHP());
                 monsterRespawnTimer = 0;
             }

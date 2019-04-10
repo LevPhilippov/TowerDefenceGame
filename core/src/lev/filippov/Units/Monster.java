@@ -116,12 +116,14 @@ public class Monster implements Poolable {
     }
 
     public void update(float dt) {
-
-        if(mapVersion != map.getVersion() || !targetElement.isActive()) {
-            clearMonsterWay();
-            buildRoute();
-            mapVersion = map.getVersion();
-            System.out.println("Rebuild route!");
+        //если дефеатфлаг = фалсе, то обновляем маршрут
+        if (!gameScreen.getStar16().isDefeatFlag()) {
+            if(mapVersion != map.getVersion() || !targetElement.isActive()) {
+                clearMonsterWay();
+                buildRoute();
+                mapVersion = map.getVersion();
+                System.out.println("Rebuild route!");
+            }
         }
 
         if(position.dst(nextPosition)<2.0f) {
@@ -215,6 +217,7 @@ public class Monster implements Poolable {
 
     //предположим, что монстр уже на карте
     public void buildWaveMatrix() {
+
         stack1.clear();
         stack2.clear();
         destPointReached=false;

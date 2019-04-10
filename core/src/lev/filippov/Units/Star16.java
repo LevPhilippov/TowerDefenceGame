@@ -32,7 +32,7 @@ public class Star16 {
     private float changePositionRate;
     private TextureRegion star16;
     private float tempTimer;
-    private boolean finished;
+    private boolean defeatFlag;
 
     //позиции точек
   //  private List<Vector2> positions;
@@ -125,10 +125,6 @@ public class Star16 {
     }
 
     public void updateElementsState(float dt) {
-//        if(reverseTimer<=0 && !finished){
-//            finished = true;
-//            finishRound();
-//        }
 
         reverseTimer-=dt;
         timer=(int)reverseTimer;
@@ -172,7 +168,11 @@ public class Star16 {
             hp = 0;
             element.active = false;
             elements.remove(element);
-            //инициация поражения
+            //проверка поражения
+            if(isDefeat()) {
+         //       gameScreen.getMonsterEmitter().killAllMonsters();
+                //сткрипт поражения
+            }
         }
     }
 
@@ -204,5 +204,15 @@ public class Star16 {
         return false;
     }
 
+    public boolean isDefeat() {
+        if (elements.isEmpty()) {
+            defeatFlag = true;
+            return true;
+        }
+        return false;
+    }
 
+    public boolean isDefeatFlag() {
+        return defeatFlag;
+    }
 }

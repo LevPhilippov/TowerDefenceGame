@@ -32,4 +32,12 @@ public class MonsterEmitter extends ObjectPool<Monster> {
         Monster temp = getActiveElement();
         temp.init(x,y, monsterHP);
     }
+
+    public void killAllMonsters() {
+        for (int i = 0; i <activeList.size() ; i++) {
+            activeList.get(i).deactivate();
+        }
+
+    }
+
 }
