@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import oracle.jrockit.jfr.ActiveSettingEvent;
+//import oracle.jrockit.jfr.ActiveSettingEvent;
 
 public class GUICreator {
     private static Vector2 mousePosition;

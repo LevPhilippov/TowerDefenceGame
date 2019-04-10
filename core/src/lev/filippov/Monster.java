@@ -22,10 +22,13 @@ public class Monster implements Poolable {
     private Circle hitBox;
     private int scale;
     private int costForDestroying;
-    private int scoreForDestroying;
 
     //вектора направлений и построение маршрута
     private boolean destPointReached;
+
+    Stack <int[]> stack1;
+    Stack  <int[]> stack2;
+
 
     private Vector2 tempVector;
     private Vector2 nextPosition;
@@ -85,12 +88,13 @@ public class Monster implements Poolable {
         this.mapVersion = map.getVersion();
 
         this.path = new Stack<>();
+        this.stack1 = new Stack<>();
+        this.stack2 = new Stack<>();
 
 
         //игровые характеристики
         this.scale = 1;
         this.costForDestroying = 10;
-        this.scoreForDestroying = 100;
         this.damage = 10;
         this.speed = 100;
 
@@ -208,36 +212,59 @@ public class Monster implements Poolable {
 
     //предположим, что монстр уже на карте
     public void buildWaveMatrix() {
-        int tempX;
-        int tempY;
+        stack1.clear();
+        stack2.clear();
+        destPointReached=false;
+        int tempX = (int) position.x / 80;
+        int tempY = (int) position.y / 80;
         waveCounter = 1;
         //составляем матрицу, пока не достигнем точки назначения
-        routeMatrix[(int) position.x / 80][(int) position.y / 80] = waveCounter;
+        routeMatrix[tempX][tempY] = waveCounter;
+
+        stack1.add(coordMatrix[tempX][tempY]);//
+
         while (!destPointReached) {
-            for (int i = 0; i < map.getMAP_WIDTH(); i++) {
-                for (int j = 0; j < map.getMAP_HEIGHT(); j++) {
-                    if (routeMatrix[i][j] == waveCounter) {
-                        for (int[] dir : directions) {
-                            tempX=i+dir[0];
-                            tempY=j+dir[1];
-                            makeNewWave(waveCounter + 1, tempX, tempY);
-                            if (destPointReached){
-                                destPointReached=false;
-                                for (Star16.StarElement element : gameScreen.getStar16().getElements()) {
-                                    if (element.getPosition().x == tempX && element.getPosition().y == tempY) {
-                                        targetElement = element;
-                                        break;
-                                    }
-                                }
-                                defineRoute(tempX, tempY, waveCounter);
-                                return;
+
+            while(!stack1.isEmpty()) {
+                stack2.push(stack1.pop());
+            }
+
+            while (!stack2.isEmpty()){
+                int[] temp = stack2.pop();
+                for (int[] dir : directions) {
+                    tempX=temp[0]+dir[0];
+                    tempY=temp[1]+dir[1];
+
+                    markNewPoint(tempX, tempY);
+
+                    if (destPointReached){
+                        for (Star16.StarElement element : gameScreen.getStar16().getElements()) {
+                            if (element.getPosition().x == tempX && element.getPosition().y == tempY) {
+                                targetElement = element;
+                                break;
                             }
-                            //добавить условие, когда нет точки назначения
                         }
+                        defineRoute(tempX, tempY, waveCounter);
+                        return;
                     }
+                    //добавить условие, когда нет точки назначения
                 }
+
             }
             waveCounter++;
+        }
+    }
+
+    private void markNewPoint(int tempX, int tempY) {
+        if(map.isExist(tempX, tempY)) {
+            if (map.isEmpty(tempX, tempY) && cellNotInRoute(tempX, tempY)) {
+                routeMatrix[tempX][tempY] = waveCounter+1;
+                stack1.push(coordMatrix[tempX][tempY]);
+            }
+            if (map.isDestination(tempX, tempY)) {
+                destPointReached = true;
+                routeMatrix[tempX][tempY] = -1;
+            }
         }
     }
 
@@ -247,7 +274,6 @@ public class Monster implements Poolable {
         int tempY=dstY;
         path.push(coordMatrix[tempX][tempY]);
         //идем назад от последней позиции (складываем вектора направлений в Стэк)
-//routeMatrix[dstX][dstY] != 2 - это условие давало NPE на 16 - waveCounter!= 1 - is stable.
         while (waveCounter!=1) {
             for (int[] dir : directions) {
                 tempX = dstX+dir[0];
@@ -265,17 +291,6 @@ public class Monster implements Poolable {
         }
     }
 
-    private void makeNewWave(int newWaveNumber, int tempX, int tempY) {
-        if(map.isExist(tempX, tempY)) {
-            if (map.isEmpty(tempX, tempY) && cellNotInRoute(tempX, tempY)) {
-                routeMatrix[tempX][tempY] = newWaveNumber;
-            }
-            if (map.isDestination(tempX, tempY)) {
-                destPointReached = true;
-                routeMatrix[tempX][tempY] = -1;
-            }
-        }
-    }
 
     private boolean cellNotInRoute(int x, int y) {
         return routeMatrix[x][y] == 0;
