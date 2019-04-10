@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 public class Map {
+
     private final int MAP_WIDTH = 16;
     private final int MAP_HEIGHT = 9;
 
@@ -16,7 +17,7 @@ public class Map {
     private final int ELEMENT_ROAD = 1;
     private final int ELEMENT_WALL = 2;
     private final int ELEMENT_DESTINATION = 5;
-    private final int TURRET = 3;
+    private final int ELEMENT_TURRET = 3;
 
     private byte[][] data;
     private TextureRegion textureRegionGrass;
@@ -24,11 +25,18 @@ public class Map {
 
     private int version;
 
+    public int getELEMENT_GRASS() {
+        return ELEMENT_GRASS;
+    }
+
+    public int getELEMENT_TURRET() {
+        return ELEMENT_TURRET;
+    }
+
     public Map(String mapName) {
         data = new byte[MAP_WIDTH][MAP_HEIGHT];
         textureRegionGrass = Assets.getInstance().getAtlas().findRegion("grass");
         textureRegionRoad = Assets.getInstance().getAtlas().findRegion("road");
-//        textureRegionCursor = Assets.getInstance().getAtlas().findRegion("cursor");
         loadMapFromFile(mapName);
     }
 
@@ -70,6 +78,12 @@ public class Map {
                     batch.draw(textureRegionGrass, i*80, j*80);
                     batch.setColor(1,1,1,1);
                 }
+                if (data[i][j] == ELEMENT_TURRET) {
+                    batch.draw(textureRegionGrass, i * 80, j * 80);
+                }
+                if (data[i][j] == ELEMENT_DESTINATION) {
+                    batch.draw(textureRegionGrass, i*80, j*80);
+                }
             }
         }
     }
@@ -80,6 +94,7 @@ public class Map {
 
     public void setWall(int cx, int cy) {
         data[cx][cy] = ELEMENT_WALL;
+        updateMapVersion();
     }
 
     public void loadMapFromFile(String mapName) {
@@ -112,27 +127,20 @@ public class Map {
         return data[x][y] == ELEMENT_GRASS || data[x][y] == ELEMENT_ROAD;
     }
 
+
     public boolean isExist(int x, int y) {
         return (x >=0 && x<MAP_WIDTH && y>=0 && y<MAP_HEIGHT);
     }
-    public boolean isEmpty(Vector2 v){
-        int x = (int)v.x;
-        int y = (int)v.y;
-        return data[x][y] == 0;
-    }
-    public boolean isExist(Vector2 v) {
-        int x = (int)v.x;
-        int y = (int)v.y;
-        return (x >=0 && x<MAP_WIDTH && y>=0 && y<MAP_HEIGHT);
-    }
+
 
     public boolean isDestination(int x, int y) {
         return data[x][y]==ELEMENT_DESTINATION;
     }
-    public boolean isDestination(Vector2 v) {
-        int x = (int)v.x;
-        int y = (int)v.y;
-        return data[x][y]==ELEMENT_DESTINATION;
+
+
+    public void deployElementInMap(int cellX, int cellY, int ELEMENT) {
+        data[cellX][cellY] = (byte)ELEMENT;
+        updateMapVersion();
     }
 
 }

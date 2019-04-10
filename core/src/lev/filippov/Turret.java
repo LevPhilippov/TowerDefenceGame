@@ -2,48 +2,95 @@ package lev.filippov;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
-public class Turret {
+public class Turret implements Poolable {
+    //игра и отрисовка
     private GameScreen gameScreen;
-
-    private TextureRegion texture;
+    private TextureRegion[][] allTextures;
+    private int imageX;
+    private int imageY;
+    //позиция и угол разворота
     private Vector2 position;
     private Vector2 temp;
     private int cellX, cellY;
     private float angle;
-    private Monster target;
+
+    //вспомогательные поля
+    private boolean charged;
+    private boolean active;
+    private float chargeTime; //для проверки готовности к стрельбе
+
+    //игровые характеристики
+    private TurretType turretType;
+    private BulletType bulletType;
     private float rotationSpeed;
     private float fireRadius;
-
     private float fireRate;
-    private float chargeTime;
-    private boolean charged;
+    private int power;
+    private float bulletSpeed;
+    private int turretCost;
+
+    //прочие сущности
+    private Monster target;
 
 
-    public Turret(GameScreen gameScreen) {
+    public Turret(GameScreen gameScreen, TextureRegion[][] allTextures) {
         this.gameScreen = gameScreen;
-        this.texture = new TextureRegion(Assets.getInstance().getAtlas().findRegion("turrets"), 0, 0, 80, 80);
-        this.cellX = 8;
-        this.cellY = 4;
-        position = new Vector2(cellX*80+40, cellY*80+40);
+        this.allTextures = allTextures;
+        position = new Vector2();
         temp = new Vector2();
-        this.fireRadius = 500f;
-        this.rotationSpeed = 360f;
-        this.fireRate = 1f;
+    }
+
+    public void init (int cellX, int cellY, TurretType type) {
+        //текстуры и координаты
+        this.turretType = type;
+        this.bulletType = type.bulletType;
+        this.imageX = type.imageX;
+        this.imageY = type.imageY;
+        this.cellX = cellX;
+        this.cellY = cellY;
+        position.set(cellX*80+40, cellY*80+40);
+        active=true;
+        //игровые параметры
+        initGameParam();
+    }
+
+    private void initGameParam() {
+        //параметры пушки
+        this.fireRadius = turretType.fireRadius;
+        this.rotationSpeed = turretType.rotationSpeed;
+        this.fireRate = turretType.fireRate;
+        //параметры пули
+        this.power = bulletType.power;
+        this.bulletSpeed = bulletType.speed;
+        this.turretCost = turretType.cost;
+        //вспомогательные
+        charged = false;
+        chargeTime = 0;
+    }
+
+    public int getTurretCost() {
+        return turretCost;
+    }
+
+    @Override
+    public boolean isActive() {
+        return active;
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(texture, cellX * 80, cellY * 80, 40, 40, 80, 80, 1, 1, angle);
+        batch.draw(allTextures[imageX][imageY], cellX * 80, cellY * 80, 40, 40, 80, 80, 1, 1, angle);
     }
-
     public void update(float dt) {
-        target = null;
 
-//        if (target != null && !isMonsterInRange(target)) {
-//            target = null;
-//        }
- //       if (target == null) {
+        if (target != null) {
+             if(!isMonsterInRange(target) || !target.isActive())
+                target = null;
+        }
+
+        if (target == null) {
             float maxDst = fireRadius;
             for (int i = 0; i < gameScreen.getMonsterEmitter().getActiveList().size(); i++) {
                 Monster m = gameScreen.getMonsterEmitter().getActiveList().get(i);
@@ -54,7 +101,7 @@ public class Turret {
                     maxDst = dst;
                 }
             }
-//        }
+        }
         if (target != null) {
             checkRotation(dt);
             openFire(dt);
@@ -63,30 +110,12 @@ public class Turret {
     private float getRangeToTarget(Monster target) {
         return position.dst(target.getPosition());
     }
+
     private boolean isMonsterInRange(Monster target) {
         return fireRadius >= getRangeToTarget(target);
     }
 
     public void checkRotation(float dt) {
-//        float angleTo = getAngleToTarget();
-//        angleTo%=360;
-//        angle%=360;
-//
-//        if (angle >= angleTo) {
-//            if (angle-angleTo > 180) {
-//                angle += rotationSpeed * dt;
-//            } else {
-//                angle -= rotationSpeed * dt;
-//            }
-//        }
-//
-//        if (angle < angleTo) {
-//            if (angle-angleTo < -180) {
-//                angle -= rotationSpeed * dt;
-//            } else {
-//                angle += rotationSpeed * dt;
-//            }
-//        }
         if (target != null) {
             float angleTo = getAngleToTarget();
             if (angle > angleTo) {
@@ -124,9 +153,30 @@ public class Turret {
 
         if (Math.abs(getAngleToTarget()-angle)<4 && charged) {
             chargeTime = 0.0f;
-            float rad = (float)Math.toRadians(angle);
-            gameScreen.getBulletEmitter().setup(position.x, position.y, (float)Math.cos(rad), (float)Math.sin(rad), 500);
+            float rad = (float)Math.toRadians(angle+ MathUtils.random(-5,5)); //введен разброс
+            gameScreen.getBulletEmitter().setup(position.x, position.y, (float)Math.cos(rad), (float)Math.sin(rad), bulletType, target);
             System.out.println("Fire!");
             charged = false;
         }
-    }}
+    }
+
+    public void deactivate() {
+        active=false;
+    }
+
+    public int getCellX() {
+        return cellX;
+    }
+
+    public int getCellY() {
+        return cellY;
+    }
+
+    public TurretType getTurretType() {
+        return turretType;
+    }
+
+    public void upgrade() {
+        init(cellX,cellY, turretType.upgradeTurret);
+    }
+}

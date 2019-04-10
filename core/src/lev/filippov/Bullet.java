@@ -15,7 +15,13 @@ public class Bullet implements Poolable {
     private GameScreen gameScreen;
     private Circle hitBox;
     private final float bulletRadius = 8;
-    private final int damage = 25;
+    private float speed;
+    private int power;
+    private int maxLifetime;
+    private int lifetime;
+    private Monster target;
+    private BulletType bulletType;
+
 
     public Bullet (GameScreen gameScreen) {
         this.gameScreen = gameScreen;
@@ -23,14 +29,15 @@ public class Bullet implements Poolable {
         position = new Vector2();
         velocity = new Vector2();
         hitBox = new Circle(position, bulletRadius);
+        maxLifetime = 3;
     }
 
     public Circle getHitBox() {
         return hitBox;
     }
 
-    public int getDamage() {
-        return damage;
+    public int getPower() {
+        return power;
     }
 
     @Override
@@ -38,12 +45,15 @@ public class Bullet implements Poolable {
         return active;
     }
 
-    void init (float x, float y, float vx, float vy, float speed) {
+    void init (float x, float y, float vx, float vy, BulletType bulletType, Monster target) {
+        this.bulletType = bulletType;
+        this.target = target;
+        this.speed = bulletType.speed;
+        this.power = bulletType.power;
         position.set(x,y);
-        velocity.set(vx,vy);
-        velocity.nor();
-        velocity.scl(speed);
+        velocity.set(vx,vy).nor().scl(speed);
         active = true;
+        lifetime=0;
     }
 
     public void render(SpriteBatch batch) {
@@ -53,11 +63,21 @@ public class Bullet implements Poolable {
     }
 
     public void update(float dt) {
+        maxLifetime +=dt;
+        //если пуля самонаводящаяся
+
+        if(bulletType.autoaim) {
+            if(target.isActive())
+            velocity.set(target.getPosition()).sub(position).nor().scl(speed);
+            else
+                deactivate();
+        }
+
         position.mulAdd(velocity, dt);
         hitBox.setPosition(position);
         gameScreen.getParticleEmitter().setup(position.x, position.y, MathUtils.random(-25, 25), MathUtils.random(-25, 25), 0.1f,1.2f,0.2f,1,0,0,1,1,1,0,1);
 
-        if (position.x < 0 || position.x>1280 || position.y<0 || position.y>720)
+        if (position.x < 0 || position.x>1280 || position.y<0 || position.y>720 || lifetime>=maxLifetime)
             deactivate();
     }
 
@@ -66,7 +86,7 @@ public class Bullet implements Poolable {
     }
 
     public void makeDamage(Monster m){
-        m.receiveDamage(damage);
+        m.receiveDamage(power);
         deactivate();
     }
 
