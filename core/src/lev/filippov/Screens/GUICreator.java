@@ -22,6 +22,11 @@ public class GUICreator {
     private static int selectedCellX;
     private static int selectedCellY;
 
+    private static Group winScreenGroup;
+    private static Group defeatScreenGroup;
+    private static Group groupTurretAction;
+    private static Group groupTurretSelection;
+
 
     public static void createGUI(GameScreen gameScreen) {
         Stage stage = new Stage(ScreenManager.getInstance().getViewport(), gameScreen.getBatch());
@@ -35,15 +40,16 @@ public class GUICreator {
             textButtonStyle.up = skin.getDrawable("shortButton");
             textButtonStyle.font = Assets.getInstance().getAssetManager().get("fonts/zorque16.ttf");
 
-//            winStyle.up = skin.getDrawable("simpleButton");
-//            winStyle.font = Assets.getInstance().getAssetManager().get("fonts/zorque36.ttf");;
+            winStyle.up = skin.getDrawable("simpleButton");
+            winStyle.font = Assets.getInstance().getAssetManager().get("fonts/zorque36.ttf");;
+
             skin.add("simpleSkin", textButtonStyle);
-//            skin.add("winSkin", winStyle);
+            skin.add("winSkin", winStyle);
 
 
             //подготовка групп кнопок
             //кнопки группы "действие" (первичная)
-            Group groupTurretAction = new Group();
+            groupTurretAction = new Group();
 
             //создание кнопок
             Button btnSetTurret = new TextButton("Build", skin, "simpleSkin");
@@ -60,7 +66,7 @@ public class GUICreator {
             groupTurretAction.setColor(1,1,1,0.5f);
 
             //кнопки группы "установка" (дочерняя)
-            Group groupTurretSelection = new Group();
+            groupTurretSelection = new Group();
             groupTurretSelection.setVisible(false);
             Button btnSetTurret1 = new TextButton("T1", skin, "simpleSkin");
             Button btnSetTurret2 = new TextButton("T2", skin, "simpleSkin");
@@ -106,24 +112,51 @@ public class GUICreator {
                 }
             });
 
-            // Окошко победы/поражения
-//            Group winScrenGroup = new Group();
-//            winScrenGroup.setPosition(480, 250);
-//            winScrenGroup.setVisible(false);
-//            Button nextLevelButton = new TextButton("Go to next level", skin, "winSkin");
-//            nextLevelButton.setPosition(0,0);
-//            winScrenGroup.addActor(nextLevelButton);
-//
-//            nextLevelButton.addListener(new ChangeListener() {
-//                @Override
-//                public void changed(ChangeEvent event, Actor actor) {
-//                    ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
-//                }
-//            });
+//             Окошко победы/поражения
+            winScreenGroup = new Group();
+            winScreenGroup.setPosition(480, 250);
+            winScreenGroup.setVisible(false);
+            Button nextLevelButton = new TextButton("Save and go to next level", skin, "winSkin");
+            Button restartButton = new TextButton("Restart round", skin, "winSkin");
+            restartButton.setPosition(0,0);
+            nextLevelButton.setPosition(0,100);
+            winScreenGroup.addActor(nextLevelButton);
 
-            stage.addActor(groupTurretSelection);
+            nextLevelButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
+                }
+            });
+
+//             Окошко победы/поражения
+            defeatScreenGroup = new Group();
+            defeatScreenGroup.setPosition(480, 250);
+            defeatScreenGroup.setVisible(false);
+            Button goToMenuButton = new TextButton("Go to menu.", skin, "winSkin");
+            goToMenuButton.setPosition(0,100);
+            defeatScreenGroup.addActor(restartButton);
+            defeatScreenGroup.addActor(goToMenuButton);
+
+            restartButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
+                }
+            });
+
+            goToMenuButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.MENU);
+                }
+            });
+
+
+        stage.addActor(groupTurretSelection);
             stage.addActor(groupTurretAction);
-//            stage.addActor(winScrenGroup);
+            stage.addActor(winScreenGroup);
+            stage.addActor(defeatScreenGroup);
             gameScreen.setStage(stage);
             skin.dispose();
 
@@ -149,5 +182,18 @@ public class GUICreator {
         InputMultiplexer inputMultiplexer = new InputMultiplexer(stage, myProc);
         Gdx.input.setInputProcessor(inputMultiplexer);
         }
+
+        public static void showDeafeatMenu() {
+        groupTurretAction.setVisible(false);
+        groupTurretSelection.setVisible(false);
+        defeatScreenGroup.setVisible(true);
+        }
+
+        public static void showWinMenu() {
+        groupTurretAction.setVisible(false);
+        groupTurretSelection.setVisible(false);
+        winScreenGroup.setVisible(true);
+        }
+
 
 }

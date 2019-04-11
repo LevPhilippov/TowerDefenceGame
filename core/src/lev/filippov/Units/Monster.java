@@ -230,7 +230,7 @@ public class Monster implements Poolable {
         //составляем матрицу, пока не достигнем точки назначения
         routeMatrix[tempX][tempY] = waveCounter;
 
-        stack1.add(coordMatrix[tempX][tempY]);//
+        stack1.add(coordMatrix[tempX][tempY]);
 
         while (true) {
 

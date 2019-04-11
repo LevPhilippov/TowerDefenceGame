@@ -2,6 +2,7 @@ package lev.filippov.Screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -105,6 +106,7 @@ public class GameScreen implements Screen {
     @Override
     public void render(float delta) {
         float dt = Gdx.graphics.getDeltaTime();
+
         update(dt);
         batch.begin();
 
@@ -156,19 +158,25 @@ public class GameScreen implements Screen {
         infoEmitter.checkPool();
     }
 
-    public void showWinScreen(){
-//        groupTurretAction.setVisible(false);
-//        groupTurretSelection.setVisible(false);
-//        winScrenGroup.setVisible(true);
+    public void winAction(){
+        GUICreator.showWinMenu();
     }
+
+    public void defeatAction() {
+        GUICreator.showDeafeatMenu();
+    }
+
+
     @Override
     public void resize(int width, int height) {
         ScreenManager.getInstance().resize(width, height);
     }
+
     @Override
     public void pause() {
 
     }
+
     @Override
     public void resume() {
 

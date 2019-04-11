@@ -84,12 +84,11 @@ public class MonsterWaveController {
             }
             return;
         }
-        //
+        //смена волны и фиксация победы
         if(waveReverseTimer<=0) {
             waveIsActive = false;
             if (waveTemplatesList.isEmpty()) {
-                System.out.println("Успех!");
-                //уровень закончился, монстры взрываются, король всех убивает и т.д., затем идет переход на другой уровень.
+                gameScreen.winAction();
                 return;
             }
             currentTemplate = waveTemplatesList.removeFirst();

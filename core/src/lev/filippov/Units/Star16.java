@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import lev.filippov.Assets;
+import lev.filippov.Screens.GUICreator;
 import lev.filippov.Screens.GameScreen;
 import lev.filippov.Map;
 
@@ -158,9 +159,6 @@ public class Star16 {
         return false;
     }
 
-////    public void finishRound() {
-//        gameScreen.getPlayer().roundCompleted();
-//    }
 
     public void addHP(StarElement element, int damage) {
         element.addHP(-damage);
@@ -170,8 +168,8 @@ public class Star16 {
             elements.remove(element);
             //проверка поражения
             if(isDefeat()) {
-         //       gameScreen.getMonsterEmitter().killAllMonsters();
-                //сткрипт поражения
+                gameScreen.getMonsterEmitter().killAllMonsters();
+                gameScreen.defeatAction();
             }
         }
     }

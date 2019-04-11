@@ -2,6 +2,7 @@ package lev.filippov;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class TowerDefenseGame extends Game {
@@ -13,7 +14,7 @@ public class TowerDefenseGame extends Game {
         batch = new SpriteBatch();
         //инициализация и передача управления к Singleton ScreenManager
         ScreenManager.getInstance().init(this, batch);
-        ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
+        ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.MENU);
     }
 
     @Override

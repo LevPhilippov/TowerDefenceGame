@@ -2,14 +2,14 @@ package lev.filippov.Screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import lev.filippov.Assets;
 import lev.filippov.ScreenManager;
@@ -21,6 +21,7 @@ public class MenuScreen implements Screen{
     private BitmapFont menuFont;
     private Stage stage;
     private Group menuGroup;
+    private Group choosePlayerGroup;
 
     public MenuScreen(SpriteBatch batch, Camera camera) {
         this.batch = batch;
@@ -37,14 +38,17 @@ public class MenuScreen implements Screen{
         this.stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
         Gdx.input.setInputProcessor(stage);
 
-        //шкура для кнопок
+        //шкура
         Skin skin = new Skin();
         skin.addRegions(Assets.getInstance().getAtlas());
 
+        //Styles
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
-
         textButtonStyle.up = skin.getDrawable("simpleButton");
         textButtonStyle.font = menuFont;
+        Label.LabelStyle labelStyle = new Label.LabelStyle(menuFont, Color.WHITE);
+        TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle(menuFont,Color.WHITE, skin.getDrawable("star16"),skin.getDrawable("star16"),skin.getDrawable("simpleButton"));
+        //Добавляем в skin
         skin.add("simpleSkin", textButtonStyle);
 
         //кнопки меню
@@ -52,17 +56,57 @@ public class MenuScreen implements Screen{
         menuGroup.setVisible(true);
         menuGroup.setPosition(480, 250);
         //создание кнопок
-        Button btnNewGame = new TextButton("NEW GAME", skin, "simpleSkin");
+        Button btnNewGame = new TextButton("Start", skin, "simpleSkin");
         Button btnExit = new TextButton("EXIT", skin, "simpleSkin");
+        Button btnBack = new TextButton("Back to main menu", skin, "simpleSkin");
+        Button btnStart = new TextButton("New game", skin, "simpleSkin");
+        Button btnLoad = new TextButton("Load", skin, "simpleSkin");
 
-        //разменение внутри Stage
-        btnExit.setPosition(0,10);
+        //группа выбор игрока
+        choosePlayerGroup = new Group();
+        choosePlayerGroup.setVisible(false);
+        choosePlayerGroup.setPosition(480, 250);
+
+        //Label
+        Label label = new Label("Player name", labelStyle);
+        label.setWidth(320);
+        label.setAlignment(1);
+
+        //TextField
+        TextField textField = new TextField("", textFieldStyle);
+        textField.setWidth(320);
+        textField.setAlignment(1);
+
+        //разменение внутри Group
+        label.setPosition(0,300);
+        textField.setPosition(0, 200);
+        btnStart.setPosition(0,100);
+        btnLoad.setPosition(0,0);
+        btnBack.setPosition(0,-100);
+
+        btnExit.setPosition(0,0);
         btnNewGame.setPosition(0, 100);
 
         btnNewGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
+            }
+        });
+
+        btnBack.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                choosePlayerGroup.setVisible(false);
+                menuGroup.setVisible(true);
+            }
+        });
+
+        btnNewGame.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                choosePlayerGroup.setVisible(true);
+                menuGroup.setVisible(false);
             }
         });
 
@@ -75,6 +119,14 @@ public class MenuScreen implements Screen{
 
         menuGroup.addActor(btnNewGame);
         menuGroup.addActor(btnExit);
+
+        choosePlayerGroup.addActor(label);
+        choosePlayerGroup.addActor(textField);
+        choosePlayerGroup.addActor(btnBack);
+        choosePlayerGroup.addActor(btnStart);
+        choosePlayerGroup.addActor(btnLoad);
+
+        stage.addActor(choosePlayerGroup);
         stage.addActor(menuGroup);
 
         skin.dispose();
@@ -82,7 +134,11 @@ public class MenuScreen implements Screen{
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         float dt = Gdx.graphics.getDeltaTime();
+
         update(dt);
         batch.begin();
         for (int i = 0; i < ScreenManager.WORLD_WIDTH; i++) {
@@ -90,9 +146,6 @@ public class MenuScreen implements Screen{
                 batch.draw(Assets.getInstance().getAtlas().findRegion("road"),i*80,j*80);
             }
         }
-        menuFont.setColor(0,0,0,1);
-        menuFont.draw(batch,"My Extra Fucking Tower Defence", 388, 600);
-        menuFont.setColor(1,1,1,1);
 
         batch.end();
         stage.draw();
