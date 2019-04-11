@@ -44,7 +44,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        this.map = new Map(GameSaver.loadGame(playerName));
+        this.map = new Map(GameSaverLoader.loadGame(playerName));
         this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
         this.turretEmitter = new TurretEmitter(this);

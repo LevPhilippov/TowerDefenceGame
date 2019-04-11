@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import lev.filippov.Assets;
-import lev.filippov.GameSaver;
+import lev.filippov.GameSaverLoader;
 import lev.filippov.ScreenManager;
 
 public class MenuScreen implements Screen{
@@ -91,7 +91,7 @@ public class MenuScreen implements Screen{
         btnNewGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                GameSaver.saveProgress(textField.getText());
+                GameSaverLoader.saveProgress(textField.getText());
                 GameScreen.playerName = textField.getText();
                 ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
             }
@@ -108,7 +108,7 @@ public class MenuScreen implements Screen{
         btnStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                GameSaver.mapListLoader();
+                GameSaverLoader.mapListLoader();
                 choosePlayerGroup.setVisible(true);
                 menuGroup.setVisible(false);
             }

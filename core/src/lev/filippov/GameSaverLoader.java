@@ -5,7 +5,7 @@ import com.badlogic.gdx.Gdx;
 import java.io.*;
 import java.util.*;
 
-public class GameSaver {
+public class GameSaverLoader {
 
     public static void saveProgress(String playerName) {
         if(!Gdx.files.external("saves/" + playerName + ".save").exists()) {

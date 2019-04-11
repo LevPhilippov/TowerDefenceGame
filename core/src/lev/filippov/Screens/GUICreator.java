@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import lev.filippov.Assets;
-import lev.filippov.GameSaver;
+import lev.filippov.GameSaverLoader;
 import lev.filippov.ScreenManager;
 //import oracle.jrockit.jfr.ActiveSettingEvent;
 
@@ -125,7 +125,7 @@ public class GUICreator {
             nextLevelButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    GameSaver.saveProgress(GameScreen.playerName);
+                    GameSaverLoader.saveProgress(GameScreen.playerName);
                     ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
                 }
             });
