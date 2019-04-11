@@ -3,13 +3,16 @@ package lev.filippov.Units;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import lev.filippov.Assets;
 import lev.filippov.Screens.GameScreen;
 import lev.filippov.Map;
 import lev.filippov.Emitters.Poolable;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Stack;
 
 public class Monster implements Poolable {
@@ -31,6 +34,8 @@ public class Monster implements Poolable {
     Stack <int[]> stack1;
     Stack  <int[]> stack2;
     private Stack <int[]> path;
+    ArrayList<int[]> list;
+
 
 
     private Vector2 tempVector;
@@ -91,6 +96,7 @@ public class Monster implements Poolable {
         this.path = new Stack<>();
         this.stack1 = new Stack<>();
         this.stack2 = new Stack<>();
+        this.list = new ArrayList<int[]>();
 
 
         //игровые характеристики
@@ -215,7 +221,7 @@ public class Monster implements Poolable {
 
     //предположим, что монстр уже на карте
     public void buildWaveMatrix() {
-        boolean destPointReached=false;
+        //чистим вспомогательные коллекции и поля
         stack1.clear();
         stack2.clear();
         int tempX = (int) (position.x / 80);
@@ -269,6 +275,8 @@ public class Monster implements Poolable {
     }
 
     private void defineRoute(int dstX, int dstY, int waveCounter) {
+        //чистим вспомогательные коллекции
+        list.clear();
         //запоминаем точку назначения
         int tempX=dstX;
         int tempY=dstY;
@@ -278,15 +286,19 @@ public class Monster implements Poolable {
             for (int[] dir : directions) {
                 tempX = dstX+dir[0];
                 tempY = dstY+dir[1];
-
                 if (map.isExist(tempX, tempY) && routeMatrix[tempX][tempY] == waveCounter) {
-                    path.push(coordMatrix[tempX][tempY]);
-                    break;
+                    list.add(coordMatrix[tempX][tempY]);
+//                    path.push(coordMatrix[tempX][tempY]);
+//                    break;
                 }
             }
+            path.push(list.get(MathUtils.random(0,list.size()-1)));
 
-            dstX = tempX;
-            dstY = tempY;
+//            dstX = tempX;
+//            dstY = tempY;
+            dstX = path.peek()[0];
+            dstY = path.peek()[1];
+            list.clear();
             waveCounter--;
         }
     }
