@@ -146,7 +146,6 @@ public class GameScreen implements Screen {
         infoEmitter.update(dt);
 
         CheckCollisonServise.checkCollision(this);
-        CheckCollisonServise.checkBulletCollisionsWithWalls(this);
 
         stage.act(dt);
 
