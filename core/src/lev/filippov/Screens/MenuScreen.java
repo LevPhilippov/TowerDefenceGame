@@ -91,7 +91,7 @@ public class MenuScreen implements Screen{
         btnNewGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                GameSaver.saveProgress(textField.getText(), GameSaver.mapListLoader()[0].getName());
+                GameSaver.saveProgress(textField.getText());
                 GameScreen.playerName = textField.getText();
                 ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
             }

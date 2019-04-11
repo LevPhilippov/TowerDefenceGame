@@ -13,8 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import lev.filippov.Assets;
+import lev.filippov.GameSaver;
 import lev.filippov.ScreenManager;
-import lev.filippov.Screens.GameScreen;
 //import oracle.jrockit.jfr.ActiveSettingEvent;
 
 public class GUICreator {
@@ -112,7 +112,7 @@ public class GUICreator {
                 }
             });
 
-//             Окошко победы/поражения
+//             Окошко победы
             winScreenGroup = new Group();
             winScreenGroup.setPosition(480, 250);
             winScreenGroup.setVisible(false);
@@ -125,11 +125,19 @@ public class GUICreator {
             nextLevelButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
+                    GameSaver.saveProgress(GameScreen.playerName);
                     ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
                 }
             });
 
-//             Окошко победы/поражения
+            restartButton.addListener(new ChangeListener() {
+                @Override
+                public void changed(ChangeEvent event, Actor actor) {
+                    ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
+                }
+            });
+
+//             Окошко поражения
             defeatScreenGroup = new Group();
             defeatScreenGroup.setPosition(480, 250);
             defeatScreenGroup.setVisible(false);

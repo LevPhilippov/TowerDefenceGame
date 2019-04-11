@@ -3,15 +3,24 @@ package lev.filippov;
 import com.badlogic.gdx.Gdx;
 
 import java.io.*;
+import java.util.*;
 
 public class GameSaver {
 
-    public static void saveProgress(String playerName, String mapName) {
-        File file = new File("saves/" + playerName + ".save");
+    public static void saveProgress(String playerName) {
+        if(!Gdx.files.external("saves/" + playerName + ".save").exists()) {
+            try {
+                Gdx.files.external("saves/" + playerName + ".save").file().createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        String mapName = SaveGameRound(playerName);
         try {
-            PrintWriter printWriter = new PrintWriter(file);
-            printWriter.write(mapName);
-            printWriter.close();
+            Writer writer = Gdx.files.external("saves/" + playerName + ".save").writer(true);
+            writer.write(mapName);
+            writer.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -19,18 +28,42 @@ public class GameSaver {
 
     }
 
-    public static File[] mapListLoader() {
+    public static ArrayList<String> mapListLoader() {
         File[] files = new File("maps/").listFiles();
-        return files;
+        ArrayList<String> maps = new ArrayList<>();
+        for (int i = 0; i <files.length ; i++) {
+            maps.add(files[i].getName());
+        }
+        Collections.sort(maps);
+        return maps;
     }
 
-    public static String loadSavedGameRound(String playerName) {
-        BufferedReader bufferedReader = Gdx.files.internal("saves/"+playerName+".save").reader(8192);
+    private static String SaveGameRound(String playerName) {
+        BufferedReader bufferedReader = Gdx.files.external("saves/"+playerName+".save").reader(8192);
+        String str = null;
         try {
-            return bufferedReader.readLine().trim();
+            str = bufferedReader.readLine();
+            bufferedReader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "NoSuchFile";
+        ArrayList<String> list = mapListLoader();
+        if(str==null) {
+            return list.get(0);
+        }
+        return list.get(list.indexOf(str)+1);
     }
+
+    public static String loadGame (String playerName) {
+        BufferedReader bufferedReader = Gdx.files.external("saves/"+playerName+".save").reader(8192);
+        String str = null;
+        try {
+            str = bufferedReader.readLine();
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return str;
+    }
+
 }

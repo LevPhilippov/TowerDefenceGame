@@ -2,7 +2,6 @@ package lev.filippov.Screens;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Camera;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -45,7 +44,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        this.map = new Map(GameSaver.loadSavedGameRound(playerName));
+        this.map = new Map(GameSaver.loadGame(playerName));
         this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
         this.turretEmitter = new TurretEmitter(this);
@@ -55,7 +54,7 @@ public class GameScreen implements Screen {
         this.star16 = new Star16(this);
         this.winFont = Assets.getInstance().getAssetManager().get("fonts/zorque36.ttf");
         this.monsterWaveController = new MonsterWaveController(this);
-        RoundLoader.loadRound(this, "level_1.map");
+        RoundLoader.loadRound(this, map.getFileName());
         GUICreator.createGUI(this);
     }
 
