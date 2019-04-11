@@ -88,7 +88,7 @@ public class Bullet implements Poolable {
         hitBox.setPosition(position);
         gameScreen.getParticleEmitter().setup(position.x, position.y, MathUtils.random(-25, 25), MathUtils.random(-25, 25), 0.1f,1.2f,0.2f,1,0,0,1,1,1,0,1);
 
-        if (position.x < 0 || position.x>1280 || position.y<0 || position.y>720 || lifetime>maxLifetime) {
+        if (position.x <= 0 || position.x>=1280 || position.y<=0 || position.y>=720 || lifetime>maxLifetime) {
             deactivate();
         }
     }

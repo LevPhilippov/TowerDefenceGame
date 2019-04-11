@@ -27,10 +27,10 @@ public class Monster implements Poolable {
     private int costForDestroying;
 
     //вектора направлений и построение маршрута
-    private boolean destPointReached;
 
     Stack <int[]> stack1;
     Stack  <int[]> stack2;
+    private Stack <int[]> path;
 
 
     private Vector2 tempVector;
@@ -44,12 +44,10 @@ public class Monster implements Poolable {
     private static int[] East = new int[]{1,0};
     private static int[][] directions = {North,South,West,East};
     private static int[][][] coordMatrix;
-    private Stack <int[]> path;
     private int[] tempDstCell;
 
     private int[][] routeMatrix;
     private int mapVersion;
-    private int waveCounter;
 
 
     //игровые параметры монстра
@@ -217,19 +215,18 @@ public class Monster implements Poolable {
 
     //предположим, что монстр уже на карте
     public void buildWaveMatrix() {
-
+        boolean destPointReached=false;
         stack1.clear();
         stack2.clear();
-        destPointReached=false;
-        int tempX = (int) position.x / 80;
-        int tempY = (int) position.y / 80;
-        waveCounter = 1;
+        int tempX = (int) (position.x / 80);
+        int tempY = (int) (position.y / 80);
+        int waveCounter = 1;
         //составляем матрицу, пока не достигнем точки назначения
         routeMatrix[tempX][tempY] = waveCounter;
 
         stack1.add(coordMatrix[tempX][tempY]);//
 
-        while (!destPointReached) {
+        while (true) {
 
             while(!stack1.isEmpty()) {
                 stack2.push(stack1.pop());
@@ -241,9 +238,7 @@ public class Monster implements Poolable {
                     tempX=temp[0]+dir[0];
                     tempY=temp[1]+dir[1];
 
-                    markNewPoint(tempX, tempY);
-
-                    if (destPointReached){
+                    if (markNewPoint(tempX, tempY, waveCounter)){
                         for (Star16.StarElement element : gameScreen.getStar16().getElements()) {
                             if (element.getPosition().x == tempX && element.getPosition().y == tempY) {
                                 targetElement = element;
@@ -253,25 +248,24 @@ public class Monster implements Poolable {
                         defineRoute(tempX, tempY, waveCounter);
                         return;
                     }
-                    //добавить условие, когда нет точки назначения
                 }
-
             }
             waveCounter++;
         }
     }
 
-    private void markNewPoint(int tempX, int tempY) {
+    private boolean markNewPoint(int tempX, int tempY, int waveCounter) {
         if(map.isExist(tempX, tempY)) {
             if (map.isEmpty(tempX, tempY) && cellNotInRoute(tempX, tempY) && !gameScreen.getTurretEmitter().isTurretInCell(tempX,tempY)) {
                 routeMatrix[tempX][tempY] = waveCounter+1;
                 stack1.push(coordMatrix[tempX][tempY]);
             }
             if (gameScreen.getStar16().isStar16(tempX, tempY)) {
-                destPointReached = true;
                 routeMatrix[tempX][tempY] = -1;
+                return true;
             }
         }
+        return false;
     }
 
     private void defineRoute(int dstX, int dstY, int waveCounter) {

@@ -3,6 +3,7 @@ package lev.filippov;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import lev.filippov.Screens.GameScreen;
+import lev.filippov.Templates.BulletTemplate;
 import lev.filippov.Templates.TurretTemplate;
 import lev.filippov.Templates.WaveTemplate;
 import lev.filippov.Units.Star16;
@@ -17,6 +18,7 @@ public class RoundLoader {
         loadMapFromFile(gameScreen, mapName);
         loadWaveTemplates(gameScreen, mapName);
         loadTurretTemplates(gameScreen);
+        loadBulletTemplates(gameScreen);
 
     }
 
@@ -109,6 +111,24 @@ public class RoundLoader {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void loadBulletTemplates(GameScreen gameScreen) {
+            BufferedReader reader;
+            try{
+                reader = Gdx.files.internal("armory.dat").reader(8192);
+                String str;
+                while (!(str = reader.readLine()).equals("# bullets-up"));
+
+                while (!(str = reader.readLine()).equals("# bullets-down")) {
+                    BulletTemplate template = new BulletTemplate(str);
+                    gameScreen.getBulletEmitter().getBulletTemplates().put(template.getName(), template);
+
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 
 }

@@ -19,33 +19,7 @@ public class BulletEmitter extends ObjectPool<Bullet> {
     public BulletEmitter (GameScreen gameScreen) {
         this.gameScreen = gameScreen;
         this.bulletTemplates = new HashMap<String, BulletTemplate>();
-        loadTemplates();
     }
-
-    private void loadTemplates() {
-        BufferedReader reader;
-        try{
-            reader = Gdx.files.internal("armory.dat").reader(8192);
-            String str;
-            Boolean read=false;
-            while ((str = reader.readLine())!=null) {
-                if(str.equals("# bullets-down"))
-                    break;
-                if(str.equals("# bullets-up")) {
-                    read = true;
-                    continue;
-                }
-                if(read) {
-                    BulletTemplate template = new BulletTemplate(str);
-                    bulletTemplates.put(template.getName(), template);
-                }
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     @Override
     protected Bullet newObject() {
@@ -69,5 +43,7 @@ public class BulletEmitter extends ObjectPool<Bullet> {
         }
     }
 
-
+    public HashMap<String, BulletTemplate> getBulletTemplates() {
+        return bulletTemplates;
+    }
 }

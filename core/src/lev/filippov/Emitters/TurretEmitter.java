@@ -24,31 +24,6 @@ public class TurretEmitter extends ObjectPool<Turret> {
         this.allTextures = Assets.getInstance().getAtlas().findRegion("turrets").split(80,80);
         this.turretTemplates = new HashMap<String, TurretTemplate>();
         this.turretsMap = new byte[gameScreen.getMap().getMAP_WIDTH()][gameScreen.getMap().getMAP_HEIGHT()];
-       // loadTemplates();
-    }
-
-    private void loadTemplates() {
-        BufferedReader reader;
-        try{
-            reader = Gdx.files.internal("armory.dat").reader(8192);
-            String str;
-            Boolean read=false;
-            while ((str = reader.readLine())!=null) {
-                if(str.equals("# turrets-down"))
-                    break;
-                if(str.equals("# turrets-up")) {
-                    read = true;
-                    continue;
-                }
-                if(read) {
-                    TurretTemplate template = new TurretTemplate(str);
-                    turretTemplates.put(template.getName(), template);
-                }
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
@@ -81,12 +56,12 @@ public class TurretEmitter extends ObjectPool<Turret> {
     }
 
     public boolean canIDeployItHere(int cellX, int cellY) {
-        //проверка условия: пуста ли клетка?
-        if (gameScreen.getMap().getData()[cellX][cellY] != gameScreen.getMap().getELEMENT_GRASS()) {
-            gameScreen.getInfoEmitter().setup(cellX,cellY,"You can't build on a road!");
+        //проверка условия: пуста ли клетка? На дороге строить нельзя, поэтому
+        if (gameScreen.getMap().isCellGrass(cellX,cellY) && isTurretInCell(cellX,cellY)) {
+            gameScreen.getInfoEmitter().setup(cellX,cellY,"You can't build here!");
             return false;
         }
-        //проверка условия: усли мобы в клетке?
+        //проверка условия: если мобы в клетке?
         if (isMonstersInCell(cellX, cellY)) {
             gameScreen.getInfoEmitter().setup(cellX,cellY, "You can't deploy tower upon monsters!");
             return false;
@@ -161,7 +136,6 @@ public class TurretEmitter extends ObjectPool<Turret> {
        if(!t.getTurretTemplate().getUpgradedTurretName().equals("-")) {
            return true;
        }
-        System.out.println("Максимальный апгрейд!");
         gameScreen.getInfoEmitter().setup(gameScreen.getSelectedCellX(), gameScreen.getSelectedCellY(), "Already upgraded!");
         return false;
     }

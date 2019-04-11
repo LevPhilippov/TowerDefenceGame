@@ -138,11 +138,10 @@ public class GameScreen implements Screen {
         map.update(dt);
         star16.update(dt);
 
-
         //эмиттеры
-        monsterWaveController.update(dt);
         turretEmitter.update(dt);
         bulletEmitter.update(dt);
+        monsterWaveController.update(dt);
         particleEmitter.update(dt);
         infoEmitter.update(dt);
 
