@@ -30,6 +30,7 @@ public class GameScreen implements Screen {
     private float respTime;
     private Star16 star16;
     private MonsterWaveController monsterWaveController;
+    protected static String playerName;
 
     private BitmapFont winFont;
 
@@ -44,7 +45,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        this.map = new Map("level_1.map");
+        this.map = new Map(GameSaver.loadSavedGameRound(playerName));
         this.scoreFont = Assets.getInstance().getAssetManager().get("fonts/zorque24.ttf");
         this.selectedCellTexture = Assets.getInstance().getAtlas().findRegion("cursor");
         this.turretEmitter = new TurretEmitter(this);

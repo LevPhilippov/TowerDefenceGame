@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import lev.filippov.Assets;
+import lev.filippov.GameSaver;
 import lev.filippov.ScreenManager;
 
 public class MenuScreen implements Screen{
@@ -56,10 +57,10 @@ public class MenuScreen implements Screen{
         menuGroup.setVisible(true);
         menuGroup.setPosition(480, 250);
         //создание кнопок
-        Button btnNewGame = new TextButton("Start", skin, "simpleSkin");
+        Button btnStart = new TextButton("Start", skin, "simpleSkin");
         Button btnExit = new TextButton("EXIT", skin, "simpleSkin");
         Button btnBack = new TextButton("Back to main menu", skin, "simpleSkin");
-        Button btnStart = new TextButton("New game", skin, "simpleSkin");
+        Button btnNewGame = new TextButton("New game", skin, "simpleSkin");
         Button btnLoad = new TextButton("Load", skin, "simpleSkin");
 
         //группа выбор игрока
@@ -90,6 +91,8 @@ public class MenuScreen implements Screen{
         btnNewGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                GameSaver.saveProgress(textField.getText(), GameSaver.mapListLoader()[0].getName());
+                GameScreen.playerName = textField.getText();
                 ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
             }
         });
@@ -102,9 +105,10 @@ public class MenuScreen implements Screen{
             }
         });
 
-        btnNewGame.addListener(new ChangeListener() {
+        btnStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                GameSaver.mapListLoader();
                 choosePlayerGroup.setVisible(true);
                 menuGroup.setVisible(false);
             }
@@ -117,13 +121,14 @@ public class MenuScreen implements Screen{
             }
         });
 
-        menuGroup.addActor(btnNewGame);
+
+        menuGroup.addActor(btnStart);
         menuGroup.addActor(btnExit);
 
         choosePlayerGroup.addActor(label);
         choosePlayerGroup.addActor(textField);
         choosePlayerGroup.addActor(btnBack);
-        choosePlayerGroup.addActor(btnStart);
+        choosePlayerGroup.addActor(btnNewGame);
         choosePlayerGroup.addActor(btnLoad);
 
         stage.addActor(choosePlayerGroup);

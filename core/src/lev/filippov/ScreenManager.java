@@ -15,6 +15,7 @@ import lev.filippov.Screens.LoadingScreen;
 import lev.filippov.Screens.MenuScreen;
 
 public class ScreenManager {
+
     public enum ScreenType {
         GAME,
         MENU
