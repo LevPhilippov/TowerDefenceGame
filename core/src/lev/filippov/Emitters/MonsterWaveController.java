@@ -47,28 +47,28 @@ public class MonsterWaveController {
         monsterEmitter.update(dt);
     }
 
-    private void loadTemplates() {
-        BufferedReader reader;
-        try{
-            reader = Gdx.files.internal("maps/" + mapName).reader(8192);
-            String str;
-            Boolean read=false;
-
-            do{
-                str = reader.readLine();
-
-            } while (!str.equals("# waves-up"));
-
-            while (!(str = reader.readLine()).equals("# waves-down")){
-                WaveTemplate template = new WaveTemplate(str);
-                waveTemplatesList.addLast(template);
-                waveTemplates.put(template.getWaveNumber(), template);
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void loadTemplates() {
+//        BufferedReader reader;
+//        try{
+//            reader = Gdx.files.internal("maps/" + mapName).reader(8192);
+//            String str;
+//            Boolean read=false;
+//
+//            do{
+//                str = reader.readLine();
+//
+//            } while (!str.equals("# waves-up"));
+//
+//            while (!(str = reader.readLine()).equals("# waves-down")){
+//                WaveTemplate template = new WaveTemplate(str);
+//                waveTemplatesList.addLast(template);
+//                waveTemplates.put(template.getWaveNumber(), template);
+//            }
+//            reader.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private void setupMonsters(float dt) {
 //        timer+=dt;
