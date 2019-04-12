@@ -74,7 +74,7 @@ public class MenuScreen implements Screen{
         label.setAlignment(1);
 
         //TextField
-        TextField textField = new TextField("", textFieldStyle);
+        final TextField textField = new TextField("", textFieldStyle);
         textField.setWidth(320);
         textField.setAlignment(1);
 
@@ -91,7 +91,7 @@ public class MenuScreen implements Screen{
         btnNewGame.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                GameSaverLoader.saveProgress(textField.getText());
+                GameSaverLoader.createNewPlayer(textField.getText());
                 GameScreen.playerName = textField.getText();
                 ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
             }

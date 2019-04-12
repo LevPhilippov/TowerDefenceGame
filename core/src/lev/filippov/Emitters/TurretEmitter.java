@@ -56,8 +56,8 @@ public class TurretEmitter extends ObjectPool<Turret> {
     }
 
     public boolean canIDeployItHere(int cellX, int cellY) {
-        //проверка условия: пуста ли клетка? На дороге строить нельзя, поэтому
-        if (gameScreen.getMap().isCellGrass(cellX,cellY) && isTurretInCell(cellX,cellY)) {
+        //проверка условия: пуста ли клетка? На дороге строить нельзя!
+        if (!gameScreen.getMap().isCellGrass(cellX,cellY) || isTurretInCell(cellX,cellY)) {
             gameScreen.getInfoEmitter().setup(cellX,cellY,"You can't build here!");
             return false;
         }

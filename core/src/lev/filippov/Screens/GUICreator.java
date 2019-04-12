@@ -27,8 +27,8 @@ public class GUICreator {
     private static Group groupTurretAction;
     private static Group groupTurretSelection;
 
-
-    public static void createGUI(GameScreen gameScreen) {
+    public static void createGUI(GameScreen gameScreenExample) {
+        final GameScreen gameScreen = gameScreenExample;
         Stage stage = new Stage(ScreenManager.getInstance().getViewport(), gameScreen.getBatch());
             //шкура для кнопок
             Skin skin = new Skin();
@@ -125,7 +125,7 @@ public class GUICreator {
             nextLevelButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
-                    GameSaverLoader.saveProgress(GameScreen.playerName);
+                    GameSaverLoader.saveCompletedRound(GameScreen.playerName, gameScreen.getMap().getFileName());
                     ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAME);
                 }
             });

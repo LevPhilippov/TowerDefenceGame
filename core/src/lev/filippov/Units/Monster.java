@@ -93,9 +93,9 @@ public class Monster implements Poolable {
         this.routeMatrix = new int[map.getMAP_WIDTH()][map.getMAP_HEIGHT()];
         this.mapVersion = map.getVersion();
 
-        this.path = new Stack<>();
-        this.stack1 = new Stack<>();
-        this.stack2 = new Stack<>();
+        this.path = new Stack<int[]>();
+        this.stack1 = new Stack<int[]>();
+        this.stack2 = new Stack<int[]>();
         this.list = new ArrayList<int[]>();
 
 

@@ -47,7 +47,7 @@ public class Star16 {
         this.timer = maxRoundTime;
         this.star16 = Assets.getInstance().getAtlas().findRegion("star16");
  //       this.positions = new LinkedList<>();
-        this.elements = new ArrayList<>();
+        this.elements = new ArrayList<StarElement>();
         this.changePositionRate = 60;
         this.reverseTimer = maxRoundTime;
         this.timer = 0;
