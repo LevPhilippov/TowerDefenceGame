@@ -108,7 +108,6 @@ public class MenuScreen implements Screen{
         btnStart.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                GameSaverLoader.mapListLoader();
                 choosePlayerGroup.setVisible(true);
                 menuGroup.setVisible(false);
             }
@@ -184,4 +183,6 @@ public class MenuScreen implements Screen{
     public void dispose() {
 
     }
+
+
 }

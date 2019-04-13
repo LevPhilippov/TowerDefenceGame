@@ -3,6 +3,7 @@ package lev.filippov;
 import com.badlogic.gdx.Gdx;
 
 import java.io.*;
+import java.net.URISyntaxException;
 import java.util.*;
 
 public class GameSaverLoader {
@@ -22,9 +23,9 @@ public class GameSaverLoader {
 //    }
 
     public static boolean createNewPlayer(String playerName) {
-        if(!Gdx.files.external("saves/" + playerName + ".save").exists()) {
+        if(!Gdx.files.local("saves/" + playerName + ".save").exists()) {
             try {
-                return Gdx.files.external("saves/" + playerName + ".save").file().createNewFile();
+                return Gdx.files.local("saves/" + playerName + ".save").file().createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -32,8 +33,19 @@ public class GameSaverLoader {
         return false;
     }
 
+    // "./maps/" - определяет путь к файлу отталкиваясь от директории в которой расположен .jar
+    // или использовать new File(GameSaverLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
     public static ArrayList<String> mapListLoader() {
-        File[] files = new File("maps/").listFiles();
+        File jarFile = null;
+        try {
+            jarFile = new File(GameSaverLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+        String inputFilePath = jarFile.getParent() + File.separator +"maps" + File.separator;
+
+//        String path = "./maps/";
+        File[] files = new File(inputFilePath).listFiles();
         ArrayList<String> maps = new ArrayList<String>();
         for (int i = 0; i <files.length ; i++) {
             maps.add(files[i].getName());
@@ -58,7 +70,7 @@ public class GameSaverLoader {
 //        }
 //        return list.get(list.indexOf(str)+1);
 
-        Writer writer = Gdx.files.external("saves/"+playerName+".save").writer(true);
+        Writer writer = Gdx.files.local("saves/"+playerName+".save").writer(true);
         try {
             writer.write("\n");
             writer.write(mapName);
@@ -69,7 +81,7 @@ public class GameSaverLoader {
     }
 
     public static String loadGame (String playerName) {
-        BufferedReader bufferedReader = Gdx.files.external("saves/"+playerName+".save").reader(8192);
+        BufferedReader bufferedReader = Gdx.files.local("saves/"+playerName+".save").reader(8192);
         String str = null;
         ArrayList<String> mapList = new ArrayList<String>();
         try {
@@ -84,6 +96,7 @@ public class GameSaverLoader {
         if(mapList.isEmpty()) {
             return mapListLoader().get(0);
         }
+
         return mapListLoader().get(mapListLoader().indexOf(str)+1);
     }
 }
