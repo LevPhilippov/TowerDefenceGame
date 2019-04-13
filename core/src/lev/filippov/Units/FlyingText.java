@@ -1,9 +1,10 @@
-package lev.filippov;
+package lev.filippov.Units;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import lev.filippov.Emitters.Poolable;
 
 public class FlyingText implements Poolable {
     private String text;

@@ -3,15 +3,14 @@ package lev.filippov;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 
-public class Map {
 
+public class Map {
     private final int MAP_WIDTH = 16;
     private final int MAP_HEIGHT = 9;
+    private String fileName;
 
     private final int ELEMENT_GRASS = 0;
     private final int ELEMENT_ROAD = 1;
@@ -34,10 +33,23 @@ public class Map {
     }
 
     public Map(String mapName) {
+        this.fileName = mapName;
         data = new byte[MAP_WIDTH][MAP_HEIGHT];
         textureRegionGrass = Assets.getInstance().getAtlas().findRegion("grass");
         textureRegionRoad = Assets.getInstance().getAtlas().findRegion("road");
-        loadMapFromFile(mapName);
+        this.data = new byte[MAP_WIDTH][MAP_HEIGHT];
+    }
+
+    public int getELEMENT_WALL() {
+        return ELEMENT_WALL;
+    }
+
+    public int getELEMENT_ROAD() {
+        return ELEMENT_ROAD;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public int getVersion() {
@@ -81,9 +93,6 @@ public class Map {
                 if (data[i][j] == ELEMENT_TURRET) {
                     batch.draw(textureRegionGrass, i * 80, j * 80);
                 }
-                if (data[i][j] == ELEMENT_DESTINATION) {
-                    batch.draw(textureRegionGrass, i*80, j*80);
-                }
             }
         }
     }
@@ -97,32 +106,6 @@ public class Map {
         updateMapVersion();
     }
 
-    public void loadMapFromFile(String mapName) {
-        this.data = new byte[MAP_WIDTH][MAP_HEIGHT];
-        BufferedReader reader = null;
-        try {
-            reader = Gdx.files.internal("maps/" + mapName).reader(8192);
-            for (int i = 0; i < 9; i++) {
-                String str = reader.readLine();
-                for (int j = 0; j < 16; j++) {
-                    char symb = str.charAt(j);
-                    if (symb == '1') {
-                        data[j][8 - i] = ELEMENT_ROAD;
-                    }
-                    if (symb=='2'){
-                        data[j][8-i] = ELEMENT_WALL;
-                    }
-                    if (symb =='5') {
-                        data[j][8-i] = ELEMENT_DESTINATION;
-                    }
-                }
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public boolean isEmpty(int x, int y){
         return data[x][y] == ELEMENT_GRASS || data[x][y] == ELEMENT_ROAD;
     }
@@ -132,15 +115,7 @@ public class Map {
         return (x >=0 && x<MAP_WIDTH && y>=0 && y<MAP_HEIGHT);
     }
 
-
-    public boolean isDestination(int x, int y) {
-        return data[x][y]==ELEMENT_DESTINATION;
+    public boolean isCellGrass(int cellX, int cellY) {
+        return data[cellX][cellY] == ELEMENT_GRASS;
     }
-
-
-    public void deployElementInMap(int cellX, int cellY, int ELEMENT) {
-        data[cellX][cellY] = (byte)ELEMENT;
-        updateMapVersion();
-    }
-
 }

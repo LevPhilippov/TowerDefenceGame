@@ -1,9 +1,38 @@
+# map-up
+0000000000000000
+0022200000022200
+0020000000000200
+0020000000000200
+0000000000000000
+0020000000000200
+0020000000000200
+0022200000022200
+0000000000000000
+# map-down
+# destination coordinates
+#coordinates-up
+0000000500000000
 0000000000000000
 0000000000000000
-0110102001010111
-0100101001100100
-5110101001100100
-0100101001100100
-0100112101010111
+0000000000000000
+5000000000000005
 0000000000000000
 0000000000000000
+0000000000000000
+0000000500000000
+#coordinates-down
+# waveNumber, monstersHP, rate(per sec), duration(sec)
+# waves-up
+    1,          50,             3,          20
+    2,          75,             5,          20
+    3,          100,            7,          20
+    4,          120,            10,         20
+    5,          150,            10,         40
+# waves-down
+
+range of cells for monters initiations;
+# coordXBegin, coordXEnd, coordYBegin, coordYEnd
+# monsterRespCells-up
+6, 10, 3, 5
+# monsterRespPoints-down
+

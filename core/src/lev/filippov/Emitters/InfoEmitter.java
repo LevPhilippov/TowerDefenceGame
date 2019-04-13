@@ -1,7 +1,9 @@
-package lev.filippov;
+package lev.filippov.Emitters;
 
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import lev.filippov.Units.FlyingText;
+import lev.filippov.Screens.GameScreen;
 
 public class InfoEmitter extends ObjectPool<FlyingText> {
     private GameScreen gameScreen;

@@ -1,8 +1,10 @@
-package lev.filippov;
+package lev.filippov.Emitters;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import lev.filippov.Screens.GameScreen;
+import lev.filippov.Units.Monster;
 
-public class MonsterEmitter extends ObjectPool <Monster> {
+public class MonsterEmitter extends ObjectPool<Monster> {
     private GameScreen gameScreen;
 
     public MonsterEmitter(GameScreen gameScreen) {
@@ -26,8 +28,16 @@ public class MonsterEmitter extends ObjectPool <Monster> {
         }
     }
 
-    public void setup(float x, float y, float vx, float vy, float speed) {
+    public void setup(float x, float y, int monsterHP) {
         Monster temp = getActiveElement();
-        temp.init(x,y,vx,vy,speed);
+        temp.init(x,y, monsterHP);
     }
+
+    public void killAllMonsters() {
+        for (int i = 0; i <activeList.size() ; i++) {
+            activeList.get(i).deactivate();
+        }
+
+    }
+
 }

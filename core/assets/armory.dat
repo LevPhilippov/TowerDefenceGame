@@ -1,0 +1,16 @@
+# name, power, speed, autoaim
+# bullets-up
+Simple-I, 5, 200, false
+Simple-II, 15, 240, false
+Simple-III, 25, 280, false
+Seeking-I, 30, 60, true
+Seeking-II, 60, 80, true
+Seeking-III, 90, 100, true
+# bullets-down
+# name, imageX, imageY, fireRadius, rotationSpeed(deg), fireRate(time btw shots), cost, upgradedTurretName, bulletName
+# turrets-up
+COMMON, 0,0, 200, 180, 0.2, 100, COMMON_UPGRADED, Simple-I
+COMMON_UPGRADED, 1, 0, 400, 260, 0.1, 200, -, Simple-II
+FREEZE, 0,1, 200, 180, 0.2, 150, FREEZE_UPGRADED, Seeking-I
+FREEZE_UPGRADED, 1, 1, 400, 260, 0.1, 200, -, Seeking-II
+# turrets-down
